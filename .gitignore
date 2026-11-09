@@ -1,0 +1,7 @@
+data/raw/*.csv
+data/raw/SYNTHETIC_DATA
+data/processed/
+__pycache__/
+*.pyc
+.DS_Store
+.venv/

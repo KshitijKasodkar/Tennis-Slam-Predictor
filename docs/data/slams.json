@@ -1,0 +1,269 @@
+{
+ "n_sims": 10000,
+ "slams": [
+  {
+   "key": "2022-580",
+   "label": "Australian Open 2022",
+   "slam": "Australian Open",
+   "year": 2022,
+   "surface": "Hard",
+   "split": "val",
+   "kind": "real draw",
+   "champion": "Rafael Nadal",
+   "horizon_months": null
+  },
+  {
+   "key": "2022-520",
+   "label": "French Open 2022",
+   "slam": "French Open",
+   "year": 2022,
+   "surface": "Clay",
+   "split": "val",
+   "kind": "real draw",
+   "champion": "Rafael Nadal",
+   "horizon_months": null
+  },
+  {
+   "key": "2022-540",
+   "label": "Wimbledon 2022",
+   "slam": "Wimbledon",
+   "year": 2022,
+   "surface": "Grass",
+   "split": "val",
+   "kind": "real draw",
+   "champion": "Novak Djokovic",
+   "horizon_months": null
+  },
+  {
+   "key": "2022-560",
+   "label": "US Open 2022",
+   "slam": "US Open",
+   "year": 2022,
+   "surface": "Hard",
+   "split": "val",
+   "kind": "real draw",
+   "champion": "Carlos Alcaraz",
+   "horizon_months": null
+  },
+  {
+   "key": "2023-580",
+   "label": "Australian Open 2023",
+   "slam": "Australian Open",
+   "year": 2023,
+   "surface": "Hard",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Novak Djokovic",
+   "horizon_months": null
+  },
+  {
+   "key": "2023-520",
+   "label": "French Open 2023",
+   "slam": "French Open",
+   "year": 2023,
+   "surface": "Clay",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Novak Djokovic",
+   "horizon_months": null
+  },
+  {
+   "key": "2023-540",
+   "label": "Wimbledon 2023",
+   "slam": "Wimbledon",
+   "year": 2023,
+   "surface": "Grass",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Carlos Alcaraz",
+   "horizon_months": null
+  },
+  {
+   "key": "2023-560",
+   "label": "US Open 2023",
+   "slam": "US Open",
+   "year": 2023,
+   "surface": "Hard",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Novak Djokovic",
+   "horizon_months": null
+  },
+  {
+   "key": "2024-580",
+   "label": "Australian Open 2024",
+   "slam": "Australian Open",
+   "year": 2024,
+   "surface": "Hard",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Jannik Sinner",
+   "horizon_months": null
+  },
+  {
+   "key": "2024-520",
+   "label": "French Open 2024",
+   "slam": "French Open",
+   "year": 2024,
+   "surface": "Clay",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Carlos Alcaraz",
+   "horizon_months": null
+  },
+  {
+   "key": "2024-540",
+   "label": "Wimbledon 2024",
+   "slam": "Wimbledon",
+   "year": 2024,
+   "surface": "Grass",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Carlos Alcaraz",
+   "horizon_months": null
+  },
+  {
+   "key": "2024-560",
+   "label": "US Open 2024",
+   "slam": "US Open",
+   "year": 2024,
+   "surface": "Hard",
+   "split": "test",
+   "kind": "real draw",
+   "champion": "Jannik Sinner",
+   "horizon_months": null
+  },
+  {
+   "key": "2025-580",
+   "label": "Australian Open 2025",
+   "slam": "Australian Open",
+   "year": 2025,
+   "surface": "Hard",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Jannik Sinner",
+   "horizon_months": null
+  },
+  {
+   "key": "2025-520",
+   "label": "French Open 2025",
+   "slam": "French Open",
+   "year": 2025,
+   "surface": "Clay",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Carlos Alcaraz",
+   "horizon_months": null
+  },
+  {
+   "key": "2025-540",
+   "label": "Wimbledon 2025",
+   "slam": "Wimbledon",
+   "year": 2025,
+   "surface": "Grass",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Jannik Sinner",
+   "horizon_months": null
+  },
+  {
+   "key": "2025-560",
+   "label": "US Open 2025",
+   "slam": "US Open",
+   "year": 2025,
+   "surface": "Hard",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Carlos Alcaraz",
+   "horizon_months": null
+  },
+  {
+   "key": "2026-580",
+   "label": "Australian Open 2026",
+   "slam": "Australian Open",
+   "year": 2026,
+   "surface": "Hard",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Carlos Alcaraz",
+   "horizon_months": null
+  },
+  {
+   "key": "2026-520",
+   "label": "French Open 2026",
+   "slam": "French Open",
+   "year": 2026,
+   "surface": "Clay",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Alexander Zverev",
+   "horizon_months": null
+  },
+  {
+   "key": "2026-540",
+   "label": "Wimbledon 2026",
+   "slam": "Wimbledon",
+   "year": 2026,
+   "surface": "Grass",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Jannik Sinner",
+   "horizon_months": null
+  },
+  {
+   "key": "2026-560",
+   "label": "US Open 2026",
+   "slam": "US Open",
+   "year": 2026,
+   "surface": "Hard",
+   "split": "post-test",
+   "kind": "real draw",
+   "champion": "Alexander Zverev",
+   "horizon_months": null
+  },
+  {
+   "key": "projection-2027-AustralianOpen",
+   "label": "Australian Open 2027 (projection)",
+   "slam": "Australian Open",
+   "year": 2027,
+   "surface": "Hard",
+   "split": "projection",
+   "kind": "random seeded draws",
+   "champion": null,
+   "horizon_months": 2
+  },
+  {
+   "key": "projection-2027-FrenchOpen",
+   "label": "French Open 2027 (projection)",
+   "slam": "French Open",
+   "year": 2027,
+   "surface": "Clay",
+   "split": "projection",
+   "kind": "random seeded draws",
+   "champion": null,
+   "horizon_months": 6
+  },
+  {
+   "key": "projection-2027-Wimbledon",
+   "label": "Wimbledon 2027 (projection)",
+   "slam": "Wimbledon",
+   "year": 2027,
+   "surface": "Grass",
+   "split": "projection",
+   "kind": "random seeded draws",
+   "champion": null,
+   "horizon_months": 8
+  },
+  {
+   "key": "projection-2027-USOpen",
+   "label": "US Open 2027 (projection)",
+   "slam": "US Open",
+   "year": 2027,
+   "surface": "Hard",
+   "split": "projection",
+   "kind": "random seeded draws",
+   "champion": null,
+   "horizon_months": 9
+  }
+ ]
+}

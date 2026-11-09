@@ -1,0 +1,1307 @@
+{
+ "split": {
+  "train": [
+   2010,
+   2021
+  ],
+  "val": 2022,
+  "test": [
+   2023,
+   2024
+  ],
+  "n_train": 29437,
+  "n_val": 2623,
+  "n_test": 5464,
+  "retirements_excluded": 1344
+ },
+ "names": {
+  "rank_only": "Rank-only logistic (baseline)",
+  "lasso": "Logistic regression + Lasso",
+  "svm": "SVM (RBF kernel)",
+  "rf": "Random forest",
+  "xgb": "XGBoost"
+ },
+ "features": [
+  "log_rank_diff",
+  "rank_points_diff",
+  "win_pct_6m_diff",
+  "matches_6m_diff",
+  "surface_win_pct_diff",
+  "h2h_win_diff",
+  "age_diff",
+  "height_diff",
+  "best_of_5",
+  "surface_clay",
+  "surface_grass"
+ ],
+ "cv": {
+  "lasso": {
+   "best_params": {
+    "C": 0.1
+   },
+   "cv_log_loss": 0.6013468904008068,
+   "train_rows": 29437,
+   "grid": [
+    {
+     "params": {
+      "C": 0.001
+     },
+     "cv_log_loss": 0.6307438409125722
+    },
+    {
+     "params": {
+      "C": 0.01
+     },
+     "cv_log_loss": 0.6019183096475037
+    },
+    {
+     "params": {
+      "C": 0.1
+     },
+     "cv_log_loss": 0.6013468904008068
+    },
+    {
+     "params": {
+      "C": 1.0
+     },
+     "cv_log_loss": 0.6013781566881572
+    }
+   ]
+  },
+  "svm": {
+   "best_params": {
+    "C": 0.3
+   },
+   "cv_log_loss": 0.6337103444694375,
+   "train_rows": 12000,
+   "grid": [
+    {
+     "params": {
+      "C": 0.3
+     },
+     "cv_log_loss": 0.6337103444694375
+    },
+    {
+     "params": {
+      "C": 1.0
+     },
+     "cv_log_loss": 0.63483268542038
+    },
+    {
+     "params": {
+      "C": 3.0
+     },
+     "cv_log_loss": 0.6376416927346198
+    }
+   ]
+  },
+  "rf": {
+   "best_params": {
+    "min_samples_leaf": 50
+   },
+   "cv_log_loss": 0.6013739957333736,
+   "train_rows": 29437,
+   "grid": [
+    {
+     "params": {
+      "min_samples_leaf": 20
+     },
+     "cv_log_loss": 0.6017828193777133
+    },
+    {
+     "params": {
+      "min_samples_leaf": 50
+     },
+     "cv_log_loss": 0.6013739957333736
+    },
+    {
+     "params": {
+      "min_samples_leaf": 100
+     },
+     "cv_log_loss": 0.6018520408948729
+    }
+   ]
+  },
+  "xgb": {
+   "best_params": {
+    "max_depth": 3,
+    "n_estimators": 200
+   },
+   "cv_log_loss": 0.6019901633262634,
+   "train_rows": 29437,
+   "grid": [
+    {
+     "params": {
+      "max_depth": 2,
+      "n_estimators": 200
+     },
+     "cv_log_loss": 0.6026693135499954
+    },
+    {
+     "params": {
+      "max_depth": 2,
+      "n_estimators": 500
+     },
+     "cv_log_loss": 0.6025573760271072
+    },
+    {
+     "params": {
+      "max_depth": 3,
+      "n_estimators": 200
+     },
+     "cv_log_loss": 0.6019901633262634
+    },
+    {
+     "params": {
+      "max_depth": 3,
+      "n_estimators": 500
+     },
+     "cv_log_loss": 0.6030496060848236
+    },
+    {
+     "params": {
+      "max_depth": 4,
+      "n_estimators": 200
+     },
+     "cv_log_loss": 0.6020539551973343
+    },
+    {
+     "params": {
+      "max_depth": 4,
+      "n_estimators": 500
+     },
+     "cv_log_loss": 0.6053356528282166
+    }
+   ]
+  }
+ },
+ "val": {
+  "rank_only": {
+   "log_loss": 0.6275486265938647,
+   "accuracy": 0.6435379336637438,
+   "roc_auc": 0.7017616595385645,
+   "brier": 0.21868495697126367,
+   "n": 2623
+  },
+  "lasso": {
+   "log_loss": 0.6146626764653353,
+   "accuracy": 0.6580251620282119,
+   "roc_auc": 0.7207343399959267,
+   "brier": 0.21299948853332343,
+   "n": 2623
+  },
+  "svm": {
+   "log_loss": 0.6239112383652295,
+   "accuracy": 0.6553564620663362,
+   "roc_auc": 0.7135716156061795,
+   "brier": 0.21681943213818472,
+   "n": 2623
+  },
+  "rf": {
+   "log_loss": 0.6117297819032175,
+   "accuracy": 0.6545939763629431,
+   "roc_auc": 0.7212731663320823,
+   "brier": 0.21223255207720884,
+   "n": 2623
+  },
+  "xgb": {
+   "log_loss": 0.6120423674583435,
+   "accuracy": 0.6580251620282119,
+   "roc_auc": 0.7218041372086933,
+   "brier": 0.21222198009490967,
+   "n": 2623
+  }
+ },
+ "selected": "rf",
+ "web_model": "xgb",
+ "calibration": {
+  "rank_only": {
+   "a": 0.8830180644426567,
+   "b": -0.03631306362092133
+  },
+  "lasso": {
+   "a": 0.9131177560848243,
+   "b": -0.0306320328324961
+  },
+  "svm": {
+   "a": 1.0265499719287638,
+   "b": -0.028414436910971105
+  },
+  "rf": {
+   "a": 0.967810520527342,
+   "b": -0.021430194852667468
+  },
+  "xgb": {
+   "a": 0.9552794098854065,
+   "b": -0.01921505108475685
+  }
+ },
+ "test_raw": {
+  "rank_only": {
+   "log_loss": 0.6304568226811819,
+   "accuracy": 0.638177159590044,
+   "roc_auc": 0.6972061424666345,
+   "brier": 0.2205008995032386,
+   "n": 5464
+  },
+  "lasso": {
+   "log_loss": 0.6207212478966747,
+   "accuracy": 0.6475109809663251,
+   "roc_auc": 0.7097048024870022,
+   "brier": 0.21651055356449428,
+   "n": 5464
+  },
+  "svm": {
+   "log_loss": 0.6344538188898742,
+   "accuracy": 0.6498901903367497,
+   "roc_auc": 0.6958928284290079,
+   "brier": 0.22160390381300882,
+   "n": 5464
+  },
+  "rf": {
+   "log_loss": 0.6180535909444252,
+   "accuracy": 0.648792093704246,
+   "roc_auc": 0.7115047971270837,
+   "brier": 0.21554866302408113,
+   "n": 5464
+  },
+  "xgb": {
+   "log_loss": 0.6196240782737732,
+   "accuracy": 0.6460468521229868,
+   "roc_auc": 0.7095444069250147,
+   "brier": 0.21623781323432922,
+   "n": 5464
+  }
+ },
+ "test_cal": {
+  "rank_only": {
+   "log_loss": 0.6286718061760015,
+   "accuracy": 0.6339677891654466,
+   "roc_auc": 0.6972074154472852,
+   "brier": 0.21983346868455172,
+   "n": 5464
+  },
+  "lasso": {
+   "log_loss": 0.6193844129132252,
+   "accuracy": 0.6467789165446559,
+   "roc_auc": 0.7097048024870022,
+   "brier": 0.21596627343294345,
+   "n": 5464
+  },
+  "svm": {
+   "log_loss": 0.6346809368597712,
+   "accuracy": 0.6509882869692533,
+   "roc_auc": 0.6958928284290079,
+   "brier": 0.2217055151237452,
+   "n": 5464
+  },
+  "rf": {
+   "log_loss": 0.6176098061311303,
+   "accuracy": 0.6471449487554904,
+   "roc_auc": 0.7115047971270837,
+   "brier": 0.21536044631214402,
+   "n": 5464
+  },
+  "xgb": {
+   "log_loss": 0.6189652681350708,
+   "accuracy": 0.6473279648609077,
+   "roc_auc": 0.7095444069250147,
+   "brier": 0.21595917642116547,
+   "n": 5464
+  }
+ },
+ "favourite_accuracy_test": 0.637628111273792,
+ "bootstrap": {
+  "selected_vs_rank_only": {
+   "diff": -0.01106200004487117,
+   "lo": -0.014877819791158799,
+   "hi": -0.00726494444297685
+  },
+  "selected_vs_lasso": {
+   "diff": -0.0017746067820949068,
+   "lo": -0.0038094737881785553,
+   "hi": 0.0002744437939638572
+  }
+ },
+ "reliability": {
+  "raw": [
+   {
+    "bin": 0,
+    "pred": 0.07071585135935703,
+    "obs": 0.03571428571428571,
+    "n": 84
+   },
+   {
+    "bin": 1,
+    "pred": 0.15676898660494046,
+    "obs": 0.1400560224089636,
+    "n": 357
+   },
+   {
+    "bin": 2,
+    "pred": 0.2539008726502448,
+    "obs": 0.30655737704918035,
+    "n": 610
+   },
+   {
+    "bin": 3,
+    "pred": 0.34939714685391055,
+    "obs": 0.3796068796068796,
+    "n": 814
+   },
+   {
+    "bin": 4,
+    "pred": 0.4525792329004309,
+    "obs": 0.45770065075921906,
+    "n": 922
+   },
+   {
+    "bin": 5,
+    "pred": 0.5478406231751268,
+    "obs": 0.545556805399325,
+    "n": 889
+   },
+   {
+    "bin": 6,
+    "pred": 0.6492952299617697,
+    "obs": 0.5935162094763092,
+    "n": 802
+   },
+   {
+    "bin": 7,
+    "pred": 0.7461002921798942,
+    "obs": 0.7315315315315315,
+    "n": 555
+   },
+   {
+    "bin": 8,
+    "pred": 0.8423957360727652,
+    "obs": 0.8123167155425219,
+    "n": 341
+   },
+   {
+    "bin": 9,
+    "pred": 0.9331127474165407,
+    "obs": 0.9444444444444444,
+    "n": 90
+   }
+  ],
+  "cal": [
+   {
+    "bin": 0,
+    "pred": 0.07093916514636385,
+    "obs": 0.04054054054054054,
+    "n": 74
+   },
+   {
+    "bin": 1,
+    "pred": 0.15703667456981668,
+    "obs": 0.138328530259366,
+    "n": 347
+   },
+   {
+    "bin": 2,
+    "pred": 0.25404763192738006,
+    "obs": 0.30064308681672025,
+    "n": 622
+   },
+   {
+    "bin": 3,
+    "pred": 0.3493132466429498,
+    "obs": 0.3776978417266187,
+    "n": 834
+   },
+   {
+    "bin": 4,
+    "pred": 0.4523667000673768,
+    "obs": 0.4664602683178535,
+    "n": 969
+   },
+   {
+    "bin": 5,
+    "pred": 0.5482677405420734,
+    "obs": 0.5382059800664452,
+    "n": 903
+   },
+   {
+    "bin": 6,
+    "pred": 0.6492785552623526,
+    "obs": 0.6163366336633663,
+    "n": 808
+   },
+   {
+    "bin": 7,
+    "pred": 0.7470725475342795,
+    "obs": 0.7314285714285714,
+    "n": 525
+   },
+   {
+    "bin": 8,
+    "pred": 0.8409286935215419,
+    "obs": 0.8327868852459016,
+    "n": 305
+   },
+   {
+    "bin": 9,
+    "pred": 0.9316535373026505,
+    "obs": 0.948051948051948,
+    "n": 77
+   }
+  ],
+  "rank_only": [
+   {
+    "bin": 0,
+    "pred": 0.07808941091647809,
+    "obs": 0.08823529411764706,
+    "n": 34
+   },
+   {
+    "bin": 1,
+    "pred": 0.15909139820068005,
+    "obs": 0.18045112781954886,
+    "n": 266
+   },
+   {
+    "bin": 2,
+    "pred": 0.2541119246192533,
+    "obs": 0.23895253682487724,
+    "n": 611
+   },
+   {
+    "bin": 3,
+    "pred": 0.3521089468791803,
+    "obs": 0.38876889848812096,
+    "n": 926
+   },
+   {
+    "bin": 4,
+    "pred": 0.4485813085760268,
+    "obs": 0.4806421152030217,
+    "n": 1059
+   },
+   {
+    "bin": 5,
+    "pred": 0.5489351103895047,
+    "obs": 0.5352112676056338,
+    "n": 1065
+   },
+   {
+    "bin": 6,
+    "pred": 0.6474324574162299,
+    "obs": 0.6273712737127372,
+    "n": 738
+   },
+   {
+    "bin": 7,
+    "pred": 0.7467724421512141,
+    "obs": 0.7421875,
+    "n": 512
+   },
+   {
+    "bin": 8,
+    "pred": 0.8442784336992805,
+    "obs": 0.863849765258216,
+    "n": 213
+   },
+   {
+    "bin": 9,
+    "pred": 0.9247146295627815,
+    "obs": 0.925,
+    "n": 40
+   }
+  ]
+ },
+ "by_surface": [
+  {
+   "group": "Clay",
+   "n": 1726,
+   "log_loss": 0.6195,
+   "accuracy": 0.6419,
+   "roc_auc": 0.708,
+   "brier": 0.2161,
+   "base_log_loss": 0.6281593114591737
+  },
+  {
+   "group": "Grass",
+   "n": 634,
+   "log_loss": 0.6101,
+   "accuracy": 0.6451,
+   "roc_auc": 0.7135,
+   "brier": 0.2131,
+   "base_log_loss": 0.6275161917111082
+  },
+  {
+   "group": "Hard",
+   "n": 3104,
+   "log_loss": 0.6181,
+   "accuracy": 0.6505,
+   "roc_auc": 0.7125,
+   "brier": 0.2154,
+   "base_log_loss": 0.6291928195303789
+  }
+ ],
+ "by_level": [
+  {
+   "group": "Grand Slam",
+   "n": 983,
+   "log_loss": 0.5391,
+   "accuracy": 0.7213,
+   "roc_auc": 0.8028,
+   "brier": 0.1823,
+   "base_log_loss": 0.5599354222271399
+  },
+  {
+   "group": "Other tour-level",
+   "n": 4481,
+   "log_loss": 0.6348,
+   "accuracy": 0.6309,
+   "roc_auc": 0.6895,
+   "brier": 0.2226,
+   "base_log_loss": 0.6437505532016055
+  }
+ ],
+ "by_rank_gap": [
+  {
+   "group": "similar rank (<1.6x)",
+   "n": 1512,
+   "log_loss": 0.6814,
+   "accuracy": 0.5642,
+   "roc_auc": 0.5888,
+   "brier": 0.2442,
+   "base_log_loss": 0.6906795342209363
+  },
+  {
+   "group": "1.6-2.7x",
+   "n": 1298,
+   "log_loss": 0.6763,
+   "accuracy": 0.5709,
+   "roc_auc": 0.6098,
+   "brier": 0.2417,
+   "base_log_loss": 0.6868158406541506
+  },
+  {
+   "group": "2.7-7.4x",
+   "n": 1655,
+   "log_loss": 0.614,
+   "accuracy": 0.6804,
+   "roc_auc": 0.7233,
+   "brier": 0.2124,
+   "base_log_loss": 0.6224834347596362
+  },
+  {
+   "group": ">7.4x",
+   "n": 999,
+   "log_loss": 0.451,
+   "accuracy": 0.8168,
+   "roc_auc": 0.8653,
+   "brier": 0.1424,
+   "base_log_loss": 0.4695277752826136
+  }
+ ],
+ "worst_misses": [
+  {
+   "date": "2023-05-29",
+   "event": "French Open",
+   "round": "R128",
+   "surface": "Clay",
+   "winner": "Thiago Seyboth Wild",
+   "loser": "Daniil Medvedev",
+   "winner_rank": 172,
+   "loser_rank": 2,
+   "p_winner": 0.049
+  },
+  {
+   "date": "2024-03-04",
+   "event": "Indian Wells Masters",
+   "round": "R32",
+   "surface": "Hard",
+   "winner": "Luca Nardi",
+   "loser": "Novak Djokovic",
+   "winner_rank": 123,
+   "loser_rank": 1,
+   "p_winner": 0.053
+  },
+  {
+   "date": "2023-04-17",
+   "event": "Banja Luka",
+   "round": "QF",
+   "surface": "Clay",
+   "winner": "Dusan Lajovic",
+   "loser": "Novak Djokovic",
+   "winner_rank": 70,
+   "loser_rank": 1,
+   "p_winner": 0.065
+  },
+  {
+   "date": "2024-08-26",
+   "event": "US Open",
+   "round": "R64",
+   "surface": "Hard",
+   "winner": "Botic van de Zandschulp",
+   "loser": "Carlos Alcaraz",
+   "winner_rank": 74,
+   "loser_rank": 3,
+   "p_winner": 0.072
+  },
+  {
+   "date": "2023-10-30",
+   "event": "Paris Masters",
+   "round": "R32",
+   "surface": "Hard",
+   "winner": "Roman Safiullin",
+   "loser": "Carlos Alcaraz",
+   "winner_rank": 45,
+   "loser_rank": 2,
+   "p_winner": 0.085
+  },
+  {
+   "date": "2024-07-01",
+   "event": "Wimbledon",
+   "round": "R128",
+   "surface": "Grass",
+   "winner": "Francisco Comesana",
+   "loser": "Andrey Rublev",
+   "winner_rank": 122,
+   "loser_rank": 6,
+   "p_winner": 0.092
+  },
+  {
+   "date": "2023-04-24",
+   "event": "Madrid Masters",
+   "round": "R64",
+   "surface": "Clay",
+   "winner": "Matteo Arnaldi",
+   "loser": "Casper Ruud",
+   "winner_rank": 105,
+   "loser_rank": 4,
+   "p_winner": 0.099
+  },
+  {
+   "date": "2023-05-29",
+   "event": "French Open",
+   "round": "R64",
+   "surface": "Clay",
+   "winner": "Daniel Altmaier",
+   "loser": "Jannik Sinner",
+   "winner_rank": 79,
+   "loser_rank": 9,
+   "p_winner": 0.107
+  },
+  {
+   "date": "2024-12-29",
+   "event": "Brisbane",
+   "round": "QF",
+   "surface": "Hard",
+   "winner": "Reilly Opelka",
+   "loser": "Novak Djokovic",
+   "winner_rank": 293,
+   "loser_rank": 7,
+   "p_winner": 0.109
+  },
+  {
+   "date": "2024-05-06",
+   "event": "Rome Masters",
+   "round": "R32",
+   "surface": "Clay",
+   "winner": "Alejandro Tabilo",
+   "loser": "Novak Djokovic",
+   "winner_rank": 32,
+   "loser_rank": 1,
+   "p_winner": 0.109
+  },
+  {
+   "date": "2023-05-29",
+   "event": "French Open",
+   "round": "R32",
+   "surface": "Clay",
+   "winner": "Lorenzo Sonego",
+   "loser": "Andrey Rublev",
+   "winner_rank": 48,
+   "loser_rank": 7,
+   "p_winner": 0.11
+  },
+  {
+   "date": "2023-01-02",
+   "event": "Adelaide-1",
+   "round": "R32",
+   "surface": "Hard",
+   "winner": "Alexei Popyrin",
+   "loser": "Felix Auger-Aliassime",
+   "winner_rank": 120,
+   "loser_rank": 6,
+   "p_winner": 0.111
+  }
+ ],
+ "permutation_importance_val": [
+  {
+   "feature": "log_rank_diff",
+   "mean": 0.02226190231933318,
+   "std": 0.0034506561193338595
+  },
+  {
+   "feature": "surface_win_pct_diff",
+   "mean": 0.014022167852135992,
+   "std": 0.002069306340845325
+  },
+  {
+   "feature": "rank_points_diff",
+   "mean": 0.00837634913374512,
+   "std": 0.0006444862906106791
+  },
+  {
+   "feature": "win_pct_6m_diff",
+   "mean": 0.004320539531132294,
+   "std": 0.0013529667085672825
+  },
+  {
+   "feature": "matches_6m_diff",
+   "mean": 0.004076392444686383,
+   "std": 0.0007865660417777714
+  },
+  {
+   "feature": "best_of_5",
+   "mean": 0.0021944591342078156,
+   "std": 0.00031884867498018296
+  },
+  {
+   "feature": "h2h_win_diff",
+   "mean": 0.0018304550316688094,
+   "std": 0.00020628575095143228
+  },
+  {
+   "feature": "age_diff",
+   "mean": 0.0018186362993097616,
+   "std": 0.0007967117100837
+  },
+  {
+   "feature": "height_diff",
+   "mean": 0.000640336381587625,
+   "std": 0.0003463103021134045
+  },
+  {
+   "feature": "surface_clay",
+   "mean": 9.822111551089918e-05,
+   "std": 0.00013058579080392878
+  },
+  {
+   "feature": "surface_grass",
+   "mean": 4.084846100440576e-05,
+   "std": 3.618442757944388e-05
+  }
+ ],
+ "lasso_coef": [
+  {
+   "feature": "log_rank_diff",
+   "coef": -0.48386103222237586
+  },
+  {
+   "feature": "rank_points_diff",
+   "coef": 0.06655209248840296
+  },
+  {
+   "feature": "win_pct_6m_diff",
+   "coef": 0.10206533540478652
+  },
+  {
+   "feature": "matches_6m_diff",
+   "coef": 0.1767261145379013
+  },
+  {
+   "feature": "surface_win_pct_diff",
+   "coef": 0.31834436026605656
+  },
+  {
+   "feature": "h2h_win_diff",
+   "coef": 0.09089205243538188
+  },
+  {
+   "feature": "age_diff",
+   "coef": -0.0537844949938709
+  },
+  {
+   "feature": "height_diff",
+   "coef": 0.06045952808495683
+  },
+  {
+   "feature": "best_of_5",
+   "coef": 0.0
+  },
+  {
+   "feature": "surface_clay",
+   "coef": -0.01821305328858203
+  },
+  {
+   "feature": "surface_grass",
+   "coef": 0.0
+  }
+ ],
+ "data": {
+  "files": [
+   "2008.csv",
+   "2009.csv",
+   "2010.csv",
+   "2011.csv",
+   "2012.csv",
+   "2013.csv",
+   "2014.csv",
+   "2015.csv",
+   "2016.csv",
+   "2017.csv",
+   "2018.csv",
+   "2019.csv",
+   "2020.csv",
+   "2021.csv",
+   "2022.csv",
+   "2023.csv",
+   "2024.csv",
+   "2025.csv",
+   "2026.csv"
+  ],
+  "rows_raw": 54597,
+  "rows_tour_level": 49703,
+  "walkovers_skipped": 322,
+  "retirements": 1546,
+  "synthetic": false,
+  "rows_modelled": 49381,
+  "years": [
+   2007,
+   2026
+  ],
+  "slam_snapshots": 20,
+  "cutoff": "2026-11-09"
+ },
+ "slam_eval": {
+  "per_slam": [
+   {
+    "key": "2022-580",
+    "label": "Australian Open 2022",
+    "split": "val",
+    "champion": "Rafael Nadal",
+    "champion_rank": 5.0,
+    "p_champion_model": 0.0407,
+    "p_champion_base": 0.0823,
+    "champion_pred_position": 5,
+    "model": {
+     "stage_loglik": -1.0385489526952594,
+     "brier_qf": 0.03610153156249999,
+     "brier_title": 0.00910230078125
+    },
+    "base": {
+     "stage_loglik": -1.0898736051822784,
+     "brier_qf": 0.036119752343750006,
+     "brier_title": 0.007288228125
+    }
+   },
+   {
+    "key": "2022-520",
+    "label": "French Open 2022",
+    "split": "val",
+    "champion": "Rafael Nadal",
+    "champion_rank": 5.0,
+    "p_champion_model": 0.1025,
+    "p_champion_base": 0.0524,
+    "champion_pred_position": 4,
+    "model": {
+     "stage_loglik": -1.0401646271960008,
+     "brier_qf": 0.0315760325,
+     "brier_title": 0.00712893890625
+    },
+    "base": {
+     "stage_loglik": -1.0973938736248288,
+     "brier_qf": 0.03753570625,
+     "brier_title": 0.00805692796875
+    }
+   },
+   {
+    "key": "2022-540",
+    "label": "Wimbledon 2022",
+    "split": "val",
+    "champion": "Novak Djokovic",
+    "champion_rank": 3.0,
+    "p_champion_model": 0.2203,
+    "p_champion_base": 0.1739,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.1493945020838185,
+     "brier_qf": 0.0460544621875,
+     "brier_title": 0.005171263281250001
+    },
+    "base": {
+     "stage_loglik": -1.1818715862811695,
+     "brier_qf": 0.04630904140625,
+     "brier_title": 0.005732998750000003
+    }
+   },
+   {
+    "key": "2022-560",
+    "label": "US Open 2022",
+    "split": "val",
+    "champion": "Carlos Alcaraz",
+    "champion_rank": 4.0,
+    "p_champion_model": 0.1198,
+    "p_champion_base": 0.0843,
+    "champion_pred_position": 3,
+    "model": {
+     "stage_loglik": -1.1078889031424053,
+     "brier_qf": 0.047413019375000004,
+     "brier_title": 0.007196205312500001
+    },
+    "base": {
+     "stage_loglik": -1.1751741248096068,
+     "brier_qf": 0.05178042484375,
+     "brier_title": 0.007685670312499999
+    }
+   },
+   {
+    "key": "2023-580",
+    "label": "Australian Open 2023",
+    "split": "test",
+    "champion": "Novak Djokovic",
+    "champion_rank": 5.0,
+    "p_champion_model": 0.2279,
+    "p_champion_base": 0.0816,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.1392739330534525,
+     "brier_qf": 0.049738526875,
+     "brier_title": 0.005049038593749999
+    },
+    "base": {
+     "stage_loglik": -1.2183542218430543,
+     "brier_qf": 0.05332922406249999,
+     "brier_title": 0.00723047171875
+    }
+   },
+   {
+    "key": "2023-520",
+    "label": "French Open 2023",
+    "split": "test",
+    "champion": "Novak Djokovic",
+    "champion_rank": 3.0,
+    "p_champion_model": 0.1109,
+    "p_champion_base": 0.1048,
+    "champion_pred_position": 3,
+    "model": {
+     "stage_loglik": -1.2029367735971213,
+     "brier_qf": 0.035240822656250004,
+     "brier_title": 0.007568462343749999
+    },
+    "base": {
+     "stage_loglik": -1.1915009669257652,
+     "brier_qf": 0.03593641125,
+     "brier_title": 0.007313347500000001
+    }
+   },
+   {
+    "key": "2023-540",
+    "label": "Wimbledon 2023",
+    "split": "test",
+    "champion": "Carlos Alcaraz",
+    "champion_rank": 1.0,
+    "p_champion_model": 0.3393,
+    "p_champion_base": 0.3119,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.1039659804476107,
+     "brier_qf": 0.03264961046875,
+     "brier_title": 0.004122001875000001
+    },
+    "base": {
+     "stage_loglik": -1.1782199922166217,
+     "brier_qf": 0.0356934090625,
+     "brier_title": 0.004114822343749999
+    }
+   },
+   {
+    "key": "2023-560",
+    "label": "US Open 2023",
+    "split": "test",
+    "champion": "Novak Djokovic",
+    "champion_rank": 2.0,
+    "p_champion_model": 0.272,
+    "p_champion_base": 0.1606,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.1574884213883438,
+     "brier_qf": 0.028907319062500002,
+     "brier_title": 0.005275895937500001
+    },
+    "base": {
+     "stage_loglik": -1.2138608121964922,
+     "brier_qf": 0.03527014187500001,
+     "brier_title": 0.006456309062500001
+    }
+   },
+   {
+    "key": "2024-580",
+    "label": "Australian Open 2024",
+    "split": "test",
+    "champion": "Jannik Sinner",
+    "champion_rank": 4.0,
+    "p_champion_model": 0.1475,
+    "p_champion_base": 0.0712,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.003097572656096,
+     "brier_qf": 0.01729066625,
+     "brier_title": 0.007175150937500001
+    },
+    "base": {
+     "stage_loglik": -1.0458490826113418,
+     "brier_qf": 0.026342076875000002,
+     "brier_title": 0.007832984218749997
+    }
+   },
+   {
+    "key": "2024-520",
+    "label": "French Open 2024",
+    "split": "test",
+    "champion": "Carlos Alcaraz",
+    "champion_rank": 3.0,
+    "p_champion_model": 0.1563,
+    "p_champion_base": 0.1106,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.0026729859838523,
+     "brier_qf": 0.02485852328125,
+     "brier_title": 0.006518981562500001
+    },
+    "base": {
+     "stage_loglik": -1.0816186128725724,
+     "brier_qf": 0.030016473437500007,
+     "brier_title": 0.007207071562499999
+    }
+   },
+   {
+    "key": "2024-540",
+    "label": "Wimbledon 2024",
+    "split": "test",
+    "champion": "Carlos Alcaraz",
+    "champion_rank": 3.0,
+    "p_champion_model": 0.2185,
+    "p_champion_base": 0.1095,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.0645618134617754,
+     "brier_qf": 0.03105852765625,
+     "brier_title": 0.005716642187499999
+    },
+    "base": {
+     "stage_loglik": -1.125354259727592,
+     "brier_qf": 0.03493913218749999,
+     "brier_title": 0.007207443593749999
+    }
+   },
+   {
+    "key": "2024-560",
+    "label": "US Open 2024",
+    "split": "test",
+    "champion": "Jannik Sinner",
+    "champion_rank": 1.0,
+    "p_champion_model": 0.3382,
+    "p_champion_base": 0.2959,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.0769545663326814,
+     "brier_qf": 0.040138870624999996,
+     "brier_title": 0.004070022656249999
+    },
+    "base": {
+     "stage_loglik": -1.103556567177892,
+     "brier_qf": 0.04285187328125,
+     "brier_title": 0.004276028750000001
+    }
+   },
+   {
+    "key": "2025-580",
+    "label": "Australian Open 2025",
+    "split": "post-test",
+    "champion": "Jannik Sinner",
+    "champion_rank": 1.0,
+    "p_champion_model": 0.5008,
+    "p_champion_base": 0.2772,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.049519590836685,
+     "brier_qf": 0.031225026874999996,
+     "brier_title": 0.0022854896874999996
+    },
+    "base": {
+     "stage_loglik": -1.1458317080980154,
+     "brier_qf": 0.03726927640625,
+     "brier_title": 0.004505173750000001
+    }
+   },
+   {
+    "key": "2025-520",
+    "label": "French Open 2025",
+    "split": "post-test",
+    "champion": "Carlos Alcaraz",
+    "champion_rank": 2.0,
+    "p_champion_model": 0.3626,
+    "p_champion_base": 0.1836,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.1027171388261086,
+     "brier_qf": 0.03128141421875,
+     "brier_title": 0.0037508962499999987
+    },
+    "base": {
+     "stage_loglik": -1.1358967723009628,
+     "brier_qf": 0.034729377500000005,
+     "brier_title": 0.006038812500000001
+    }
+   },
+   {
+    "key": "2025-540",
+    "label": "Wimbledon 2025",
+    "split": "post-test",
+    "champion": "Jannik Sinner",
+    "champion_rank": 1.0,
+    "p_champion_model": 0.2397,
+    "p_champion_base": 0.3002,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.3062128527142607,
+     "brier_qf": 0.04450959375000001,
+     "brier_title": 0.005886423750000001
+    },
+    "base": {
+     "stage_loglik": -1.2665398229034834,
+     "brier_qf": 0.040471833125,
+     "brier_title": 0.0042970656250000015
+    }
+   },
+   {
+    "key": "2025-560",
+    "label": "US Open 2025",
+    "split": "post-test",
+    "champion": "Carlos Alcaraz",
+    "champion_rank": 2.0,
+    "p_champion_model": 0.2739,
+    "p_champion_base": 0.169,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.1878573721486738,
+     "brier_qf": 0.03756791281250001,
+     "brier_title": 0.005304402968750001
+    },
+    "base": {
+     "stage_loglik": -1.173703995040885,
+     "brier_qf": 0.0379242234375,
+     "brier_title": 0.006267179687500001
+    }
+   },
+   {
+    "key": "2026-580",
+    "label": "Australian Open 2026",
+    "split": "post-test",
+    "champion": "Carlos Alcaraz",
+    "champion_rank": 1.0,
+    "p_champion_model": 0.3041,
+    "p_champion_base": 0.304,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.0021866120225313,
+     "brier_qf": 0.0235362225,
+     "brier_title": 0.0053662
+    },
+    "base": {
+     "stage_loglik": -1.0502638292183712,
+     "brier_qf": 0.027927336406250003,
+     "brier_title": 0.00422343609375
+    }
+   },
+   {
+    "key": "2026-520",
+    "label": "French Open 2026",
+    "split": "post-test",
+    "champion": "Alexander Zverev",
+    "champion_rank": 3.0,
+    "p_champion_model": 0.1419,
+    "p_champion_base": 0.1262,
+    "champion_pred_position": 2,
+    "model": {
+     "stage_loglik": -1.311623604466604,
+     "brier_qf": 0.05485013640625,
+     "brier_title": 0.008797471562499999
+    },
+    "base": {
+     "stage_loglik": -1.3124690418037461,
+     "brier_qf": 0.056906368750000005,
+     "brier_title": 0.006993743281250002
+    }
+   },
+   {
+    "key": "2026-540",
+    "label": "Wimbledon 2026",
+    "split": "post-test",
+    "champion": "Jannik Sinner",
+    "champion_rank": 1.0,
+    "p_champion_model": 0.5049,
+    "p_champion_base": 0.3397,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.172180675964968,
+     "brier_qf": 0.03928475703125,
+     "brier_title": 0.0021472635937499996
+    },
+    "base": {
+     "stage_loglik": -1.2052797870638912,
+     "brier_qf": 0.042850091874999996,
+     "brier_title": 0.0036648257812499996
+    }
+   },
+   {
+    "key": "2026-560",
+    "label": "US Open 2026",
+    "split": "post-test",
+    "champion": "Alexander Zverev",
+    "champion_rank": 2.0,
+    "p_champion_model": 0.2929,
+    "p_champion_base": 0.2032,
+    "champion_pred_position": 1,
+    "model": {
+     "stage_loglik": -1.1361820500195483,
+     "brier_qf": 0.048139987187500004,
+     "brier_title": 0.00438736140625
+    },
+    "base": {
+     "stage_loglik": -1.180639010440139,
+     "brier_qf": 0.049771687968750006,
+     "brier_title": 0.005361980624999999
+    }
+   }
+  ],
+  "aggregate": {
+   "model": {
+    "stage_loglik": -1.1262144964950194,
+    "brier_qf": 0.035642369853515626,
+    "brier_title": 0.005213856582031251
+   },
+   "base": {
+    "stage_loglik": -1.1643086551525517,
+    "brier_qf": 0.038889308593750005,
+    "brier_title": 0.0058119185058593745
+   },
+   "mean_p_champion_model": 0.2769625,
+   "mean_p_champion_base": 0.196825,
+   "n_slams": 16
+  }
+ },
+ "config": {
+  "form_window_days": 182,
+  "surface_window_days": 730,
+  "shrink_k": 5,
+  "unranked_rank": 1500,
+  "levels": [
+   "250",
+   "500",
+   "A",
+   "F",
+   "G",
+   "M",
+   "O"
+  ]
+ }
+}
