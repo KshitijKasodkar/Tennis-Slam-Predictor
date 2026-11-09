@@ -230,11 +230,10 @@ We used **Claude (Anthropic)** for brainstorming, code scaffolding, debugging, w
 ## 📚 References
 
 1. TennisMyLife ATP database: https://stats.tennismylife.org/tennis-match-database
-2. J. Sackmann, *tennis_atp* dataset: https://github.com/JeffSackmann/tennis_atp
-3. L. Breiman, "Random Forests," *Machine Learning*, 2001.
-4. T. Chen, C. Guestrin, "XGBoost: A Scalable Tree Boosting System," *KDD*, 2016.
-5. J. Platt, "Probabilistic Outputs for Support Vector Machines," 1999.
-6. F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *JMLR*, 2011.
+2. L. Breiman, "Random Forests," *Machine Learning*, 2001.
+3. T. Chen, C. Guestrin, "XGBoost: A Scalable Tree Boosting System," *KDD*, 2016.
+4. J. Platt, "Probabilistic Outputs for Support Vector Machines," 1999.
+5. F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *JMLR*, 2011.
 
 ---
 
