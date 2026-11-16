@@ -119,11 +119,11 @@
     <p class="sub dark">ES 335 project · Kshitij Kasodkar (23110175) · Arnav Gogate (23110043).
       The full reasoning is below, from the question to the conclusion. Code, exact preprocessing, splits and full results:
       <a href="https://github.com/KshitijKasodkar/Tennis-Slam-Predictor" target="_blank" rel="noopener">github.com/KshitijKasodkar/Tennis-Slam-Predictor ↗</a>
-      <button class="ghost small" id="expand-all">Collapse all</button></p>
+      <button class="ghost small" id="expand-all">Expand all</button></p>
     <div class="kpis" id="kpis"></div>
 
 
-    <details class="sec" open id="sec-faq"><summary><b>00</b> FAQ — quick answers</summary><div class="sec-in">
+    <details class="sec" id="sec-faq"><summary><b>00</b> FAQ — quick answers</summary><div class="sec-in">
       <p><strong>Isn't this just the ATP ranking?</strong> Ranking is the strongest input, so the top 3 often match. But form, surface record and head-to-head change the order and the odds: in Australia 2023 the model made Djokovic (ranked #5) favourite at 23% when the ranking-only baseline gave him 8% — he won. Across all held-out Slams the model gave champions 28% on average vs 20% for the ranking-only model.</p>
       <p><strong>Why is even the favourite only ~28%?</strong> A champion must win 7 best-of-five matches. Even at 85% per match that is 0.85⁷ ≈ 32%. Tennis has many upsets, so a calibrated model rarely goes above 50%.</p>
       <p><strong>Why train on all ATP events, not just Slams?</strong> Slams give ~500 matches a year; all tour-level events give ~2,600. Form and surface records also come from every match a player plays. The <code>best_of_5</code> feature lets the model treat Slams differently.</p>
@@ -133,7 +133,7 @@
       <p><strong>How do you avoid cheating with future data?</strong> Features for a match only use earlier matches; models are tuned on 2010–21, chosen on 2022 and tested once on 2023–24. Past Slam predictions freeze everything before round 1.</p>
       <p><strong>What is a "calibrated" probability?</strong> When the model says 70%, that player should win about 70% of such matches. The calibration chart in Results checks exactly this.</p>
     </div></details>
-    <details class="sec" open id="sec-question"><summary><b>01</b> Question</summary><div class="sec-in">
+    <details class="sec" id="sec-question"><summary><b>01</b> Question</summary><div class="sec-in">
       <p><strong>Question.</strong> From pre-match information only, how well can we estimate (a) who wins an ATP match and (b) each player's chance of winning a Grand Slam — and does this beat simply trusting the rankings?</p>
       <ul>
         <li><strong>One row</strong> = one completed tour-level match, written Player A vs Player B. <strong>Target</strong> <code>y=1</code> if A won.</li>
@@ -144,7 +144,7 @@
         <li><strong>Related work:</strong> pre-match tennis models range from point-based Markov models <a class="cite" href="#ref-3">[3]</a> to ranking-based regressions and Elo ratings, which a comparison of 11 published models found among the most accurate <a class="cite" href="#ref-4">[4]</a>; machine learning on engineered player features <a class="cite" href="#ref-5">[5]</a>; and surface-specific Elo ratings <a class="cite" href="#ref-6">[6]</a>. We follow the feature-based machine-learning line and add a full tournament simulation on top.</li>
       </ul></div></details>
 
-    <details class="sec" open id="sec-data"><summary><b>02</b> Data</summary><div class="sec-in">
+    <details class="sec" id="sec-data"><summary><b>02</b> Data</summary><div class="sec-in">
       <p><strong>Source:</strong> <a href="https://stats.tennismylife.org/tennis-match-database">TennisMyLife (TML) database</a> <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a> — ATP results in Jeff Sackmann's <code>atp_matches</code> format, kept up to date from official ATP data
         (educational, non-commercial use; raw files are not redistributed here). Loaded <span data-k="years"></span>, through <span data-k="cutoff"></span>.</p>
       <div class="mini-tiles">
@@ -175,7 +175,7 @@
       <p class="hint" id="signal-note"></p>
       </div></details>
 
-    <details class="sec" open id="sec-prep"><summary><b>03</b> Preprocessing &amp; features</summary><div class="sec-in">
+    <details class="sec" id="sec-prep"><summary><b>03</b> Preprocessing &amp; features</summary><div class="sec-in">
       <ul>
         <li><strong>One chronological pass:</strong> read a match's features from the player history, <em>then</em> add its result. No match sees itself or the future, the most common source of leakage in prediction work <a class="cite" href="#ref-15">[15]</a>.</li>
         <li><strong>Shrinkage:</strong> win rates = (wins + <span data-k="k2"></span>) / (matches + <span data-k="k"></span>) so a 2–0 record isn't “100%”.</li>
@@ -193,7 +193,7 @@
         <tr><td><code>best_of_5</code> · <code>surface_*</code></td><td>context flags for interactions</td></tr>
       </table></div></div></details>
 
-    <details class="sec" open id="sec-methods"><summary><b>04</b> Baseline &amp; methods</summary><div class="sec-in">
+    <details class="sec" id="sec-methods"><summary><b>04</b> Baseline &amp; methods</summary><div class="sec-in">
       <div class="cards4">
         <div><h4>Baseline: rank-only logistic</h4><p>One feature. What a fan already knows, and in published comparisons ranking-based models are hard to beat <a class="cite" href="#ref-4">[4]</a>. Every model must beat it.</p></div>
         <div><h4>Logistic + Lasso</h4><p>Additive log-odds, interpretable; L1 drops weak features <a class="cite" href="#ref-7">[7]</a>.</p></div>
@@ -203,7 +203,7 @@
       <p class="hint">Tuned by 4-fold <code>TimeSeriesSplit</code> on the training years (each fold trains on the past and validates on the future):</p>
       <div class="tablewrap"><table id="cv-table" class="small"></table></div></div></details>
 
-    <details class="sec" open id="sec-eval"><summary><b>05</b> Evaluation design</summary><div class="sec-in">
+    <details class="sec" id="sec-eval"><summary><b>05</b> Evaluation design</summary><div class="sec-in">
       <div class="timeline" id="timeline"></div>
       <ul>
         <li><strong>Select</strong> on validation log-loss; <strong>calibrate</strong> (Platt sigmoid <a class="cite" href="#ref-11">[11]</a>) on validation; <strong>test once</strong>. Sigmoid rather than isotonic calibration, because isotonic overfits when calibration data is small <a class="cite" href="#ref-12">[12]</a>.</li>
@@ -212,7 +212,7 @@
         <li>Tournament level: probability given to the real champion and a bracket log-score, model vs baseline.</li>
       </ul></div></details>
 
-    <details class="sec" open id="sec-results"><summary><b>06</b> Results</summary><div class="sec-in">
+    <details class="sec" id="sec-results"><summary><b>06</b> Results</summary><div class="sec-in">
       <p id="results-summary"></p>
       <div class="tablewrap"><table id="model-table" class="small"></table></div>
       <div class="panel-grid flat">
@@ -233,7 +233,7 @@
       <h4>What the selected model relies on (permutation importance, validation)</h4>
       <div class="chart" data-chart="imp"></div></div></details>
 
-    <details class="sec" open id="sec-errors"><summary><b>07</b> Errors</summary><div class="sec-in">
+    <details class="sec" id="sec-errors"><summary><b>07</b> Errors</summary><div class="sec-in">
       <div class="panel-grid flat">
         <div><h4>By surface</h4><div class="tablewrap"><table id="err-surface" class="small"></table></div></div>
         <div><h4>Slams vs other events</h4><div class="tablewrap"><table id="err-level" class="small"></table></div></div>
@@ -245,7 +245,7 @@
       <div class="tablewrap"><table id="err-miss" class="small"></table></div>
       <p class="hint">Tournament-level errors (champions the model ranked 3rd–5th, e.g. Nadal 2022) are visible in the <a href="#history">Past Slams</a> grid.</p></div></details>
 
-    <details class="sec" open id="sec-limits"><summary><b>08</b> Limitations</summary><div class="sec-in"><ul>
+    <details class="sec" id="sec-limits"><summary><b>08</b> Limitations</summary><div class="sec-in"><ul>
       <li><strong>Forecast horizon.</strong> Form is frozen at <span data-k="cutoff"></span>. The Australian Open (≈2 months away) is the most trustworthy forecast; Wimbledon and the US Open 2027 are early outlooks.</li>
       <li><strong>Unknown draws.</strong> 2027 forecasts average over random draws with the top 32 on seed lines.</li>
       <li><strong>Compounding.</strong> ~7 match probabilities multiply; matches are treated as independent (no fatigue).</li>
@@ -255,7 +255,7 @@
       <li><strong>Small tuning grids,</strong> fixed before testing and not widened afterwards. Retirements excluded from scoring.</li>
     </ul></div></details>
 
-    <details class="sec" open id="sec-changes"><summary><b>09</b> Changes from the original plan</summary><div class="sec-in">
+    <details class="sec" id="sec-changes"><summary><b>09</b> Changes from the original plan</summary><div class="sec-in">
       <p>The question, the unit of prediction, the features, the models compared, the time split, the metrics and the simulation design are as planned in our project proposal. The main differences, and why:</p>
       <div class="tablewrap"><table class="small">
         <tr><th>Planned</th><th>Final</th><th>Why</th></tr>
@@ -266,9 +266,9 @@
         <tr><td>1,000 simulations per tournament</td><td><strong>10,000</strong></td><td>Lower Monte Carlo noise (title-probability standard error at most 0.5 points) at negligible cost.</td></tr>
       </table></div></div></details>
 
-    <details class="sec" open id="sec-concl"><summary><b>10</b> Conclusion</summary><div class="sec-in"><p id="conclusion-text"></p></div></details>
+    <details class="sec" id="sec-concl"><summary><b>10</b> Conclusion</summary><div class="sec-in"><p id="conclusion-text"></p></div></details>
 
-    <details class="sec" open id="sec-repro"><summary><b>11</b> Reproduce</summary><div class="sec-in">
+    <details class="sec" id="sec-repro"><summary><b>11</b> Reproduce</summary><div class="sec-in">
 <pre>pip install -r requirements.txt
 # download https://stats.tennismylife.org/api/download-all, copy 2008.csv … 2026.csv into data/raw/
 python -m src.features      # chronological features + pre-tournament snapshots
@@ -281,7 +281,7 @@ python -m http.server -d docs 8000</pre>
         Preprocessing: <code>src/features.py</code> · splits and constants: <code>src/config.py</code> · models, tuning and evaluation: <code>src/train.py</code> · simulation: <code>src/simulate.py</code>. The README has setup, run steps, data access, AI use and citations.</p>
       <p>Split: train <span data-k="trainY"></span> · validation <span data-k="valY"></span> · test <span data-k="testY"></span> · seed 42.</p></div></details>
 
-    <details class="sec" open id="sec-ai"><summary><b>12</b> AI use &amp; references</summary><div class="sec-in">
+    <details class="sec" id="sec-ai"><summary><b>12</b> AI use &amp; references</summary><div class="sec-in">
       <p><strong>AI disclosure:</strong> Claude (Anthropic) was used for brainstorming, code scaffolding, debugging, website layout and editing text. We reviewed the code, re-ran the full pipeline ourselves, and checked the key outputs independently (leakage ordering, draw reconstruction, browser-vs-Python agreement, results against the data). We are responsible for every result.</p>
       <h4>Data</h4>
       <ol class="refs" start="1">

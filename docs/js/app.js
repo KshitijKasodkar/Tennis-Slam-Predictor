@@ -275,6 +275,8 @@
     e.target.textContent = open ? "Collapse all" : "Expand all";
     renderCharts();
   });
+  const syncBtn = () => { $("#expand-all").textContent = $$("details.sec").every((d) => d.open) ? "Collapse all" : "Expand all"; };
+  $$("details.sec").forEach((d) => d.addEventListener("toggle", () => { if (d.open) renderCharts(); syncBtn(); }));
   $$("details.sec").forEach((d) => d.addEventListener("toggle", () => renderCharts()));
   $("#kpis").innerHTML = `
     <div><b>${fmt(tc[sel].log_loss, 4)}</b><span>test log-loss · ${N[sel]} (baseline ${fmt(tc.rank_only.log_loss, 4)})</span></div>
