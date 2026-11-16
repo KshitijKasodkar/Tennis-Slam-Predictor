@@ -208,6 +208,17 @@ Tennis-Slam-Predictor/
 │── README.md
 ```
 
+### 🔍 Where to check each step
+
+| What | Where |
+|---|---|
+| Cleaning, filters and feature definitions | `src/features.py` |
+| Data splits and constants (train 2010–2021, validation 2022, test 2023–2024, seed 42) | `src/config.py` |
+| Models, tuning grids, model selection, calibration, test evaluation | `src/train.py` |
+| Monte Carlo simulation and 2027 forecasts | `src/simulate.py` |
+| **Full results:** all models on validation and test, tuning grids, error tables, bootstrap CIs, data summaries, per-Slam backtest | [`docs/data/results.json`](docs/data/results.json) |
+| Per-tournament simulation outputs | [`docs/data/slams/`](docs/data/slams/) |
+
 ---
 
 ## 🚧 Limitations & Future Scope
@@ -230,11 +241,10 @@ We used **Claude (Anthropic)** for brainstorming, code scaffolding, debugging, w
 ## 📚 References
 
 1. TennisMyLife ATP database: https://stats.tennismylife.org/tennis-match-database
-2. J. Sackmann, *tennis_atp* dataset: https://github.com/JeffSackmann/tennis_atp
-3. L. Breiman, "Random Forests," *Machine Learning*, 2001.
-4. T. Chen, C. Guestrin, "XGBoost: A Scalable Tree Boosting System," *KDD*, 2016.
-5. J. Platt, "Probabilistic Outputs for Support Vector Machines," 1999.
-6. F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *JMLR*, 2011.
+2. L. Breiman, "Random Forests," *Machine Learning*, 2001.
+3. T. Chen, C. Guestrin, "XGBoost: A Scalable Tree Boosting System," *KDD*, 2016.
+4. J. Platt, "Probabilistic Outputs for Support Vector Machines," 1999.
+5. F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *JMLR*, 2011.
 
 ---
 

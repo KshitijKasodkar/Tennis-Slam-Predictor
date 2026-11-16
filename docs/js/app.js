@@ -69,6 +69,8 @@
   const conf = (h) => (h <= 3 ? ["hi", "Most reliable"] : h <= 6 ? ["md", "Medium confidence"] : ["lo", "Early outlook"]);
 
   const bind = {
+    missRank: pct(R.data_summary.missing.rank, 2), missHt: pct(R.data_summary.missing.height, 2),
+    missAge: pct(R.data_summary.missing.age, 2), labelBal: pct(R.data_summary.label_balance),
     cutoff: new Date(R.data.cutoff).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" }),
     nSims: S.n_sims.toLocaleString(), years: `${R.data.years[0] + 1}–${R.data.years[1]}`,
     rowsTour: R.data.rows_tour_level.toLocaleString(), wo: R.data.walkovers_skipped.toLocaleString(), ret: R.data.retirements.toLocaleString(),
@@ -267,7 +269,12 @@
   }
 
   // ================================================================== 4. METHOD (rubric sections)
-  $("#expand-all").addEventListener("click", () => { const open = !$$("details.sec").every((d) => d.open); $$("details.sec").forEach((d) => (d.open = open)); renderCharts(); });
+  $("#expand-all").addEventListener("click", (e) => {
+    const open = !$$("details.sec").every((d) => d.open);
+    $$("details.sec").forEach((d) => (d.open = open));
+    e.target.textContent = open ? "Collapse all" : "Expand all";
+    renderCharts();
+  });
   $$("details.sec").forEach((d) => d.addEventListener("toggle", () => renderCharts()));
   $("#kpis").innerHTML = `
     <div><b>${fmt(tc[sel].log_loss, 4)}</b><span>test log-loss · ${N[sel]} (baseline ${fmt(tc.rank_only.log_loss, 4)})</span></div>
@@ -323,6 +330,51 @@
   $("#err-gap-note").textContent = `Near a coin flip between similarly ranked players (${pct(gp[0].accuracy)} accuracy), much more reliable with a big ranking gap (${pct(gp.at(-1).accuracy)}).`;
   table("err-miss", [{ t: "Date" }, { t: "Event" }, { t: "Rd" }, { t: "Winner (rank)" }, { t: "Loser (rank)" }, { t: "P(winner)", n: 1 }],
     R.worst_misses.map((m) => [m.date, esc(m.event), m.round, `${esc(m.winner)} (${m.winner_rank ?? "–"})`, `${esc(m.loser)} (${m.loser_rank ?? "–"})`, pct(m.p_winner)]));
+  // ---- data summaries (Data section)
+  const DS = R.data_summary;
+  const SPLIT_C = { "warm-up": "var(--base)", train: "var(--a)", val: "#1baf7a", test: "var(--b)", later: "#8a63d2" };
+  setChart("years", (box) => {
+    const W = Math.max(300, box.clientWidth), Hh = 200, m = { l: 40, r: 6, t: 8, b: 26 };
+    const svg = el("svg", { viewBox: `0 0 ${W} ${Hh}` });
+    const n = DS.per_year.length, bw = (W - m.l - m.r) / n, mx = Math.max(...DS.per_year.map((d) => d.n));
+    const sy = (v) => Hh - m.b - (v / mx) * (Hh - m.t - m.b);
+    const g = el("g", { class: "grid" }, svg);
+    [0, 1000, 2000, 3000].forEach((v) => { if (v <= mx * 1.05) { el("line", { x1: m.l, x2: W - m.r, y1: sy(v), y2: sy(v) }, g); el("text", { x: m.l - 6, y: sy(v) + 4, "text-anchor": "end" }, svg).textContent = v.toLocaleString(); } });
+    DS.per_year.forEach((d, i) => {
+      const x = m.l + i * bw;
+      const r = el("rect", { x: x + 1, y: sy(d.n), width: Math.max(1, bw - 2), height: Hh - m.b - sy(d.n), rx: 3, fill: SPLIT_C[d.split] }, svg);
+      hover(r, `${d.year}: ${d.n.toLocaleString()} matches · ${d.split}`);
+      if (i % 2 === 0 || bw > 34) el("text", { x: x + bw / 2, y: Hh - 8, "text-anchor": "middle" }, svg).textContent = "'" + String(d.year).slice(2);
+    });
+    box.replaceChildren(svg);
+  });
+  setChart("favgap", (box) => hbar(box, DS.fav_by_gap_train.map((d) => ({ label: d.group, value: d.fav_win,
+    tip: `${d.group}: better-ranked player won ${pct(d.fav_win)} of ${d.n.toLocaleString()} matches` })), { min: 0.5, max: 0.9, fmtV: (v) => pct(v, 0), labelW: 150 }));
+  const SPL = { train: "Train", val: "Validation", test: "Test", later: "Later (not modelled)" };
+  table("split-table", [{ t: "Split" }, { t: "Years" }, { t: "Matches", n: 1 }, { t: "Hard / Clay / Grass", n: 1 }, { t: "Grand Slam share", n: 1 }, { t: "Better-ranked player wins", n: 1 }],
+    DS.splits.map((d) => [SPL[d.split], d.years.replace(/(\d{4})–\1/, "$1"), d.n.toLocaleString(), `${pct(d.hard, 0)} / ${pct(d.clay, 0)} / ${pct(d.grass, 0)}`, pct(d.slam, 0), pct(d.fav_win)]));
+  const MEANING = { log_rank_diff: "better-ranked player", rank_points_diff: "more ranking points", win_pct_6m_diff: "better 6-month win rate",
+    matches_6m_diff: "played more in 6 months", surface_win_pct_diff: "better record on this surface", h2h_win_diff: "leads the head-to-head",
+    age_diff: "older player", height_diff: "taller player" };
+  table("signal-table", [{ t: "Feature" }, { t: "The player who is…" }, { t: "…wins", n: 1 }, { t: "Matches where it differs", n: 1 }],
+    DS.feature_signal_train.map((d) => [`<code>${d.feature}</code>`, MEANING[d.feature] || "", pct(d.ahead_wins), pct(d.coverage, 0)]));
+  const fsig = Object.fromEntries(DS.feature_signal_train.map((d) => [d.feature, d]));
+  $("#signal-note").textContent = `Rank, points, surface record and activity each carry signal; age on its own is a coin flip (${pct(fsig.age_diff.ahead_wins)}) and height is weak (${pct(fsig.height_diff.ahead_wins)}). Head-to-head only applies to the ${pct(fsig.h2h_win_diff.coverage, 0)} of matches where the players have met before. Features are correlated (rank and points carry almost the same information), which is why we compare models rather than adding these up.`;
+
+  // ---- tournament-level summary (Results section)
+  const heldOut = past.filter((e) => e.split !== "val");
+  const cnt = (k) => heldOut.filter((e) => e.champion_pred_position <= k).length;
+  table("slam-summary", [{ t: "Measure (16 held-out Slams)" }, { t: "Model", n: 1 }, { t: "Rank-only baseline", n: 1 }, { t: "Better" }],
+    [["Average title chance given to the eventual champion", pct(agg.mean_p_champion_model), pct(agg.mean_p_champion_base), "higher"],
+     ["Champion was the #1 favourite / in the top 2 / top 3", `${cnt(1)} / ${cnt(2)} / ${cnt(3)}`, "—", "higher"],
+     ["Bracket log-score (log-probability of each player's actual exit round)", fmt(agg.model.stage_loglik, 3), fmt(agg.base.stage_loglik, 3), "higher"],
+     ["Brier score: reached the quarter-final", fmt(agg.model.brier_qf, 4), fmt(agg.base.brier_qf, 4), "lower"],
+     ["Brier score: won the title", fmt(agg.model.brier_title, 4), fmt(agg.base.brier_title, 4), "lower"]]);
+  setChart("champ", (box) => hbar(box, heldOut.map((e) => ({
+    label: `${shortOf(e.label)} · ${e.champion.split(" ").slice(-1)[0]}`, value: e.p_champion_model, value2: e.p_champion_base,
+    tip: `<b>${esc(e.label)}</b>: champion ${esc(e.champion)} (ATP #${e.champion_rank ?? "–"})<br>model ${pct(e.p_champion_model)} (#${e.champion_pred_position}) · baseline ${pct(e.p_champion_base)}`,
+  })), { fmtV: (v) => pct(v, 0), labelW: 150, barH: 18 }));
+
   const f0 = proj[0];
   $("#conclusion-text").innerHTML = `Adding form, surface record, activity and head-to-head to the ranking gives a small but statistically clear gain in match probabilities
     (test log-loss ${fmt(tc[sel].log_loss, 4)} vs ${fmt(tc.rank_only.log_loss, 4)}); tree ensembles and Lasso perform about the same, so the signal is mostly additive.

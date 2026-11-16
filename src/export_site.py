@@ -63,9 +63,50 @@ def export_lasso(pipe):
             "intercept": float(pipe.named_steps["clf"].intercept_[0])}
 
 
+def data_summary():
+    """Focused summaries of the modelling data for the website's Data section.
+    Descriptive statistics that shape a modelling choice use the training years only."""
+    import pandas as pd
+    f = pd.read_pickle(C.PROC_DIR / "features.pkl")
+    f = f.assign(year=f.year.clip(lower=C.FIRST_YEAR))          # Dec-2007 events in the 2008 file -> warm-up
+    split_of = lambda y: ("warm-up" if y < C.TRAIN_YEARS[0] else "train" if y <= C.TRAIN_YEARS[1]
+                          else "val" if y == C.VAL_YEAR else "test" if y <= C.TEST_YEARS[1] else "later")
+    per_year = [{"year": int(y), "n": int(n), "split": split_of(y)} for y, n in f.groupby("year").size().items()]
+
+    m = f[~f.retired & (f.year >= C.TRAIN_YEARS[0])].copy()
+    m["split"] = m.year.map(split_of)
+    a_fav = m.log_rank_diff < 0                                # player A is the better-ranked one
+    m["fav_won"] = np.where(a_fav, m.y, 1 - m.y)
+    splits = []
+    for s in ("train", "val", "test", "later"):
+        d = m[m.split == s]
+        splits.append({"split": s, "years": f"{d.year.min()}–{d.year.max()}", "n": int(len(d)),
+                       "hard": float((d.surface == "Hard").mean()), "clay": float((d.surface == "Clay").mean()),
+                       "grass": float((d.surface == "Grass").mean()), "slam": float((d.level == "G").mean()),
+                       "fav_win": float(d.fav_won.mean())})
+    tr = m[m.split == "train"]
+    gap = pd.cut(tr.log_rank_diff.abs(), [-0.01, 0.5, 1.0, 2.0, 99],
+                 labels=["similar rank (<1.6x)", "1.6-2.7x", "2.7-7.4x", ">7.4x"])
+    fav_by_gap = [{"group": str(g), "n": int(len(d)), "fav_win": float(d.fav_won.mean())}
+                  for g, d in tr.groupby(gap, observed=True)]
+    # single-feature signal: how often the player who is "ahead" on one feature wins (training years)
+    signal = []
+    for c in C.FEATURES[:8]:
+        x = -tr[c] if c == "log_rank_diff" else tr[c]
+        ok = x.notna() & (x != 0)
+        won = np.where(x[ok] > 0, tr.y[ok], 1 - tr.y[ok])
+        signal.append({"feature": c, "coverage": float(ok.mean()), "missing": float(tr[c].isna().mean()),
+                       "ahead_wins": float(won.mean())})
+    missing = {"rank": float((m.A_rank.isna() | m.B_rank.isna()).mean()),
+               "height": float(m.height_diff.isna().mean()), "age": float(m.age_diff.isna().mean())}
+    return {"per_year": per_year, "splits": splits, "fav_by_gap_train": fav_by_gap,
+            "feature_signal_train": signal, "missing": missing, "label_balance": float(m.y.mean())}
+
+
 def main():
     C.SITE_DATA.mkdir(parents=True, exist_ok=True)
     res = json.loads((C.PROC_DIR / "results.json").read_text())
+    res["data_summary"] = data_summary()
     res["data"] = json.loads((C.PROC_DIR / "data_info.json").read_text())
     res["slam_eval"] = json.loads((C.PROC_DIR / "slam_eval.json").read_text())
     res["config"] = {"form_window_days": C.FORM_WINDOW, "surface_window_days": C.SURFACE_WINDOW,

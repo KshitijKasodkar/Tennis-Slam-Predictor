@@ -17,6 +17,7 @@
       <a href="#h2h" data-view="h2h">Head-to-Head</a>
       <a href="#history" data-view="history">Past Slams</a>
       <a href="#method" data-view="method">How it works</a>
+      <a class="gh" href="https://github.com/KshitijKasodkar/Tennis-Slam-Predictor" target="_blank" rel="noopener">GitHub ↗</a>
     </nav>
   </div>
 </header>
@@ -31,6 +32,7 @@
       <h1>Who wins the <em>2027</em> Grand Slams?</h1>
       <p class="sub">Every 2026 Slam is over. Using results up to the Paris Masters, we simulate each 2027 major
         <span data-k="nSims"></span> times with a calibrated match-win model. Pick a tournament, then a player.</p>
+      <p class="cta"><a href="#method">📖 Question, data, method, evaluation and results →</a> &nbsp;·&nbsp; <a href="https://github.com/KshitijKasodkar/Tennis-Slam-Predictor" target="_blank" rel="noopener">Code &amp; full results on GitHub ↗</a></p>
       <div class="slam-cards" id="slam-cards"></div>
     </div>
   </section>
@@ -114,12 +116,14 @@
 <main id="view-method" class="view" hidden>
   <section class="wrap">
     <h1 class="page-h">How it works</h1>
-    <p class="sub dark">ES 335 project · Arnav Gogate (23110043) · Kshitij Kasodkar (23110175).
-      <button class="ghost small" id="expand-all">Expand all</button></p>
+    <p class="sub dark">ES 335 project · Kshitij Kasodkar (23110175) · Arnav Gogate (23110043).
+      The full reasoning is below, from the question to the conclusion. Code, exact preprocessing, splits and full results:
+      <a href="https://github.com/KshitijKasodkar/Tennis-Slam-Predictor" target="_blank" rel="noopener">github.com/KshitijKasodkar/Tennis-Slam-Predictor ↗</a>
+      <button class="ghost small" id="expand-all">Collapse all</button></p>
     <div class="kpis" id="kpis"></div>
 
 
-    <details class="sec" id="sec-faq"><summary><b>00</b> FAQ — quick answers</summary><div class="sec-in">
+    <details class="sec" open id="sec-faq"><summary><b>00</b> FAQ — quick answers</summary><div class="sec-in">
       <p><strong>Isn't this just the ATP ranking?</strong> Ranking is the strongest input, so the top 3 often match. But form, surface record and head-to-head change the order and the odds: in Australia 2023 the model made Djokovic (ranked #5) favourite at 23% when the ranking-only baseline gave him 8% — he won. Across all held-out Slams the model gave champions 28% on average vs 20% for the ranking-only model.</p>
       <p><strong>Why is even the favourite only ~28%?</strong> A champion must win 7 best-of-five matches. Even at 85% per match that is 0.85⁷ ≈ 32%. Tennis has many upsets, so a calibrated model rarely goes above 50%.</p>
       <p><strong>Why train on all ATP events, not just Slams?</strong> Slams give ~500 matches a year; all tour-level events give ~2,600. Form and surface records also come from every match a player plays. The <code>best_of_5</code> feature lets the model treat Slams differently.</p>
@@ -129,16 +133,17 @@
       <p><strong>How do you avoid cheating with future data?</strong> Features for a match only use earlier matches; models are tuned on 2010–21, chosen on 2022 and tested once on 2023–24. Past Slam predictions freeze everything before round 1.</p>
       <p><strong>What is a "calibrated" probability?</strong> When the model says 70%, that player should win about 70% of such matches. The calibration chart in Results checks exactly this.</p>
     </div></details>
-    <details class="sec" id="sec-question"><summary><b>01</b> Question</summary><div class="sec-in">
+    <details class="sec" open id="sec-question"><summary><b>01</b> Question</summary><div class="sec-in">
       <p><strong>Question.</strong> From pre-match information only, how well can we estimate (a) who wins an ATP match and (b) each player's chance of winning a Grand Slam — and does this beat simply trusting the rankings?</p>
       <ul>
         <li><strong>One row</strong> = one completed tour-level match, written Player A vs Player B. <strong>Target</strong> <code>y=1</code> if A won.</li>
         <li><strong>When:</strong> just before the match, or before round 1 for title odds (features frozen at the start).</li>
+        <li><strong>Information available then:</strong> each player's ATP rank and points as published for that tournament, age, height, and the results of all <em>earlier</em> matches (form, surface record, head-to-head). Nothing from the match itself or later.</li>
         <li><strong>Useful answer:</strong> lower log-loss than the baseline on unseen seasons, calibrated probabilities, more probability on actual champions.</li>
         <li><strong>Limits:</strong> prediction, not causation; ATP men's singles only.</li>
       </ul></div></details>
 
-    <details class="sec" id="sec-data"><summary><b>02</b> Data</summary><div class="sec-in">
+    <details class="sec" open id="sec-data"><summary><b>02</b> Data</summary><div class="sec-in">
       <p><strong>Source:</strong> <a href="https://stats.tennismylife.org/tennis-match-database">TennisMyLife (TML) database</a> — ATP results in Jeff Sackmann's <code>atp_matches</code> format, kept up to date from official ATP data
         (educational, non-commercial use; raw files are not redistributed here). Loaded <span data-k="years"></span>, through <span data-k="cutoff"></span>.</p>
       <div class="mini-tiles">
@@ -151,9 +156,25 @@
         <li>Kept: Grand Slams, Masters 1000, ATP 500/250, Tour Finals, Olympics. Davis Cup dropped (team format).</li>
         <li>Missing rank → fixed rank <span data-k="unranked"></span>, 0 points. Missing height (&lt;1%) → handled inside the model.</li>
         <li>All matches of an event share one date, so we order by date → event → round.</li>
-      </ul></div></details>
+        <li>Missing values are rare: rank <span data-k="missRank"></span>, height <span data-k="missHt"></span>, age <span data-k="missAge"></span> of modelled matches. Labels are balanced by design (<span data-k="labelBal"></span> of rows have y = 1).</li>
+      </ul>
+      <div class="panel-grid flat">
+        <div><h4>Matches per season, coloured by role</h4>
+          <div class="legend"><span><i class="sw" style="background:var(--base)"></i>warm-up history</span><span><i class="sw a"></i>train</span><span><i class="sw" style="background:#1baf7a"></i>validation</span><span><i class="sw b"></i>test</span><span><i class="sw" style="background:#8a63d2"></i>later (2025–26)</span></div>
+          <div class="chart" data-chart="years"></div>
+          <p class="hint">2020 is half-size (COVID season). 2026 runs to 9 November.</p></div>
+        <div><h4>How often the better-ranked player wins (training years)</h4>
+          <div class="chart" data-chart="favgap"></div>
+          <p class="hint">The ranking alone is a strong signal, which is why it is our baseline. The gain from a big ranking gap is far larger than from a small one, which motivates the log-rank feature.</p></div>
+      </div>
+      <h4>The data by split</h4>
+      <div class="tablewrap"><table id="split-table" class="small"></table></div>
+      <h4>Key variables: what each one says on its own (training years)</h4>
+      <div class="tablewrap"><table id="signal-table" class="small"></table></div>
+      <p class="hint" id="signal-note"></p>
+      </div></details>
 
-    <details class="sec" id="sec-prep"><summary><b>03</b> Preprocessing &amp; features</summary><div class="sec-in">
+    <details class="sec" open id="sec-prep"><summary><b>03</b> Preprocessing &amp; features</summary><div class="sec-in">
       <ul>
         <li><strong>One chronological pass:</strong> read a match's features from the player history, <em>then</em> add its result. No match sees itself or the future.</li>
         <li><strong>Shrinkage:</strong> win rates = (wins + <span data-k="k2"></span>) / (matches + <span data-k="k"></span>) so a 2–0 record isn't “100%”.</li>
@@ -171,7 +192,7 @@
         <tr><td><code>best_of_5</code> · <code>surface_*</code></td><td>context flags for interactions</td></tr>
       </table></div></div></details>
 
-    <details class="sec" id="sec-methods"><summary><b>04</b> Baseline &amp; methods</summary><div class="sec-in">
+    <details class="sec" open id="sec-methods"><summary><b>04</b> Baseline &amp; methods</summary><div class="sec-in">
       <div class="cards4">
         <div><h4>Baseline: rank-only logistic</h4><p>One feature. What a fan already knows; every model must beat it.</p></div>
         <div><h4>Logistic + Lasso</h4><p>Additive log-odds, interpretable; L1 drops weak features.</p></div>
@@ -181,7 +202,7 @@
       <p class="hint">Tuned by 4-fold <code>TimeSeriesSplit</code> on the training years:</p>
       <div class="tablewrap"><table id="cv-table" class="small"></table></div></div></details>
 
-    <details class="sec" id="sec-eval"><summary><b>05</b> Evaluation design</summary><div class="sec-in">
+    <details class="sec" open id="sec-eval"><summary><b>05</b> Evaluation design</summary><div class="sec-in">
       <div class="timeline" id="timeline"></div>
       <ul>
         <li><strong>Select</strong> on validation log-loss; <strong>calibrate</strong> (Platt sigmoid) on validation; <strong>test once</strong>.</li>
@@ -190,7 +211,7 @@
         <li>Tournament level: probability given to the real champion and a bracket log-score, model vs baseline.</li>
       </ul></div></details>
 
-    <details class="sec" id="sec-results"><summary><b>06</b> Results</summary><div class="sec-in">
+    <details class="sec" open id="sec-results"><summary><b>06</b> Results</summary><div class="sec-in">
       <p id="results-summary"></p>
       <div class="tablewrap"><table id="model-table" class="small"></table></div>
       <div class="panel-grid flat">
@@ -199,10 +220,19 @@
           <div class="legend"><span><i class="sw a"></i>calibrated</span><span><i class="sw b"></i>raw</span><span><i class="sw base"></i>perfect</span></div>
           <div class="chart" data-chart="rel"></div></div>
       </div>
+      <h4>What the confidence interval can and cannot tell us</h4>
+      <p class="hint">The paired bootstrap resamples the 5,464 test matches, so the interval captures the uncertainty from <em>which</em> matches happened to be in the test seasons. It shows the gain over the baseline is unlikely to be luck of the sample. It does not cover a change of era (the model may work differently in later seasons), and it treats matches as independent even though the same players appear many times, so the true uncertainty is somewhat wider. It says nothing about causes.</p>
+      <h4>Tournament level: <span data-k="nSlams"></span> held-out Grand Slams (2023 → US Open 2026)</h4>
+      <div class="tablewrap"><table id="slam-summary" class="small"></table></div>
+      <div class="legend"><span><i class="sw a"></i>model: title chance given to the eventual champion before round 1</span><span><i class="sw base"></i>rank-only baseline</span></div>
+      <div class="chart" data-chart="champ"></div>
+      <p class="hint">Explore any of these tournaments in the <a href="#history">Past Slams</a> tab. The baseline gave the champion more only at Wimbledon 2025, and tied at the Australian Open 2026. With 16 tournaments these scores are noisy: one surprise champion moves the average by several points.</p>
+      <p class="hint">Every number on this site, including the tuning grids, all five models on validation and test, and the per-Slam backtest, is in
+        <a href="https://github.com/KshitijKasodkar/Tennis-Slam-Predictor/blob/main/docs/data/results.json" target="_blank" rel="noopener"><code>docs/data/results.json</code></a>; produced by <code>src/train.py</code> and <code>src/simulate.py</code>.</p>
       <h4>What the selected model relies on (permutation importance, validation)</h4>
       <div class="chart" data-chart="imp"></div></div></details>
 
-    <details class="sec" id="sec-errors"><summary><b>07</b> Errors</summary><div class="sec-in">
+    <details class="sec" open id="sec-errors"><summary><b>07</b> Errors</summary><div class="sec-in">
       <div class="panel-grid flat">
         <div><h4>By surface</h4><div class="tablewrap"><table id="err-surface" class="small"></table></div></div>
         <div><h4>Slams vs other events</h4><div class="tablewrap"><table id="err-level" class="small"></table></div></div>
@@ -211,9 +241,10 @@
       <p id="err-gap-note"></p>
       <h4>Most confident misses</h4>
       <p class="hint">Typical causes: injury/comeback not visible in rankings, fast-rising young players, one-off bad days.</p>
-      <div class="tablewrap"><table id="err-miss" class="small"></table></div></div></details>
+      <div class="tablewrap"><table id="err-miss" class="small"></table></div>
+      <p class="hint">Tournament-level errors (champions the model ranked 3rd–5th, e.g. Nadal 2022) are visible in the <a href="#history">Past Slams</a> grid.</p></div></details>
 
-    <details class="sec" id="sec-limits"><summary><b>08</b> Limitations</summary><div class="sec-in"><ul>
+    <details class="sec" open id="sec-limits"><summary><b>08</b> Limitations</summary><div class="sec-in"><ul>
       <li><strong>Forecast horizon.</strong> Form is frozen at <span data-k="cutoff"></span>. The Australian Open (≈2 months away) is the most trustworthy forecast; Wimbledon and the US Open 2027 are early outlooks.</li>
       <li><strong>Unknown draws.</strong> 2027 forecasts average over random draws with the top 32 on seed lines.</li>
       <li><strong>Compounding.</strong> ~7 match probabilities multiply; matches are treated as independent (no fatigue).</li>
@@ -222,9 +253,9 @@
       <li><strong>Small tuning grids,</strong> fixed before testing and not widened afterwards. Retirements excluded from scoring.</li>
     </ul></div></details>
 
-    <details class="sec" id="sec-concl"><summary><b>09</b> Conclusion</summary><div class="sec-in"><p id="conclusion-text"></p></div></details>
+    <details class="sec" open id="sec-concl"><summary><b>09</b> Conclusion</summary><div class="sec-in"><p id="conclusion-text"></p></div></details>
 
-    <details class="sec" id="sec-repro"><summary><b>10</b> Reproduce</summary><div class="sec-in">
+    <details class="sec" open id="sec-repro"><summary><b>10</b> Reproduce</summary><div class="sec-in">
 <pre>pip install -r requirements.txt
 # download https://stats.tennismylife.org/api/download-all, copy 2008.csv … 2026.csv into data/raw/
 python -m src.features      # chronological features + pre-tournament snapshots
@@ -233,16 +264,18 @@ python -m src.simulate      # past Slams on real draws + 2027 forecasts
 python -m src.export_site   # JSON for this site
 python scripts/verify_js_model.py   # browser model == Python model
 python -m http.server -d docs 8000</pre>
+      <p>Repository: <a href="https://github.com/KshitijKasodkar/Tennis-Slam-Predictor" target="_blank" rel="noopener">github.com/KshitijKasodkar/Tennis-Slam-Predictor</a>.
+        Preprocessing: <code>src/features.py</code> · splits and constants: <code>src/config.py</code> · models, tuning and evaluation: <code>src/train.py</code> · simulation: <code>src/simulate.py</code>. The README has setup, run steps, data access, AI use and citations.</p>
       <p>Split: train <span data-k="trainY"></span> · validation <span data-k="valY"></span> · test <span data-k="testY"></span> · seed 42.</p></div></details>
 
-    <details class="sec" id="sec-ai"><summary><b>11</b> AI use &amp; citations</summary><div class="sec-in">
+    <details class="sec" open id="sec-ai"><summary><b>11</b> AI use &amp; citations</summary><div class="sec-in">
       <p><strong>AI disclosure:</strong> Claude (Anthropic) helped with code scaffolding, debugging, site layout and editing. We reviewed and re-ran everything and checked key outputs (leakage order, draw rebuild, browser-vs-Python agreement).</p>
       <p><strong>Data:</strong> TennisMyLife database (stats.tennismylife.org), derived from J. Sackmann's <em>tennis_atp</em> (CC BY-NC-SA 4.0).
         <strong>Methods:</strong> Chen &amp; Guestrin 2016 (XGBoost); Breiman 2001 (random forests); Tibshirani 1996 (Lasso); Platt 1999 (calibration); scikit-learn.</p></div></details>
   </section>
 </main>
 
-<footer class="foot">ES 335 · static site on GitHub Pages · no personal data or keys · data through <span data-k="cutoff"></span></footer>
+<footer class="foot">ES 335 · <a href="https://github.com/KshitijKasodkar/Tennis-Slam-Predictor" target="_blank" rel="noopener">Source code on GitHub</a> · static site on GitHub Pages · no personal data or keys · data through <span data-k="cutoff"></span></footer>
 <div id="tip"></div>
 <script src="js/model.js"></script>
 <script src="js/app.js"></script>

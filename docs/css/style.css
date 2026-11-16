@@ -197,3 +197,8 @@ select { width: 100%; cursor: pointer; }
 .grid-slams th:first-child { width: 22%; }
 .grid-slams th.c { text-align: center; font: 800 16px var(--sans); color: var(--ink); letter-spacing: 0; text-transform: none; padding-bottom: 10px; }
 .grid-slams th.c small { display: block; font: 600 11px var(--sans); color: var(--ink3); text-transform: uppercase; letter-spacing: .05em; }
+.tabs a.gh { margin-left: 6px; border: 1px solid rgba(255,255,255,.25); }
+.cta { margin: -10px 0 22px; font-size: 14px; }
+.cta a { color: var(--ball); font-weight: 700; text-decoration: none; }
+.cta a:hover { text-decoration: underline; }
+.foot a { color: inherit; }
