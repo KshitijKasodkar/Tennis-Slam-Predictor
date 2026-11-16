@@ -97,11 +97,11 @@
   function route() {
     let h = location.hash.slice(1) || "forecast";
     let section = null;
-    if (h.startsWith("sec-")) { section = h; h = "method"; }
+    if (h.startsWith("sec-") || h.startsWith("ref-")) { section = h; h = "method"; }
     if (!["forecast", "h2h", "history", "method"].includes(h)) h = "forecast";
     $$(".view").forEach((v) => (v.hidden = v.id !== "view-" + h));
     $$("#tabs a").forEach((a) => a.classList.toggle("on", a.dataset.view === h));
-    if (section) { const d = document.getElementById(section); if (d) { d.open = true; d.scrollIntoView({ behavior: "smooth" }); } }
+    if (section) { const d = document.getElementById(section); if (d) { const s = d.closest("details"); if (s) s.open = true; d.scrollIntoView({ behavior: "smooth", block: section.startsWith("ref-") ? "center" : "start" }); } }
     else scrollTo(0, 0);
     renderCharts();
   }

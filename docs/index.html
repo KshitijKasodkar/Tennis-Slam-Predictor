@@ -141,10 +141,11 @@
         <li><strong>Information available then:</strong> each player's ATP rank and points as published for that tournament, age, height, and the results of all <em>earlier</em> matches (form, surface record, head-to-head). Nothing from the match itself or later.</li>
         <li><strong>Useful answer:</strong> lower log-loss than the baseline on unseen seasons, calibrated probabilities, more probability on actual champions.</li>
         <li><strong>Limits:</strong> prediction, not causation; ATP men's singles only.</li>
+        <li><strong>Related work:</strong> pre-match tennis models range from point-based Markov models <a class="cite" href="#ref-3">[3]</a> to ranking-based regressions and Elo ratings, which a comparison of 11 published models found among the most accurate <a class="cite" href="#ref-4">[4]</a>; machine learning on engineered player features <a class="cite" href="#ref-5">[5]</a>; and surface-specific Elo ratings <a class="cite" href="#ref-6">[6]</a>. We follow the feature-based machine-learning line and add a full tournament simulation on top.</li>
       </ul></div></details>
 
     <details class="sec" open id="sec-data"><summary><b>02</b> Data</summary><div class="sec-in">
-      <p><strong>Source:</strong> <a href="https://stats.tennismylife.org/tennis-match-database">TennisMyLife (TML) database</a> — ATP results in Jeff Sackmann's <code>atp_matches</code> format, kept up to date from official ATP data
+      <p><strong>Source:</strong> <a href="https://stats.tennismylife.org/tennis-match-database">TennisMyLife (TML) database</a> <a class="cite" href="#ref-1">[1]</a><a class="cite" href="#ref-2">[2]</a> — ATP results in Jeff Sackmann's <code>atp_matches</code> format, kept up to date from official ATP data
         (educational, non-commercial use; raw files are not redistributed here). Loaded <span data-k="years"></span>, through <span data-k="cutoff"></span>.</p>
       <div class="mini-tiles">
         <div><b data-k="rowsTour"></b><span>tour-level matches</span></div>
@@ -176,7 +177,7 @@
 
     <details class="sec" open id="sec-prep"><summary><b>03</b> Preprocessing &amp; features</summary><div class="sec-in">
       <ul>
-        <li><strong>One chronological pass:</strong> read a match's features from the player history, <em>then</em> add its result. No match sees itself or the future.</li>
+        <li><strong>One chronological pass:</strong> read a match's features from the player history, <em>then</em> add its result. No match sees itself or the future, the most common source of leakage in prediction work <a class="cite" href="#ref-17">[17]</a><a class="cite" href="#ref-18">[18]</a>.</li>
         <li><strong>Shrinkage:</strong> win rates = (wins + <span data-k="k2"></span>) / (matches + <span data-k="k"></span>) so a 2–0 record isn't “100%”.</li>
         <li><strong>Coin-flip A/B</strong> so the label is balanced and every feature flips sign with it; predictions average both orderings.</li>
         <li>Imputation/scaling sit inside sklearn pipelines → fitted on training folds only.</li>
@@ -194,20 +195,20 @@
 
     <details class="sec" open id="sec-methods"><summary><b>04</b> Baseline &amp; methods</summary><div class="sec-in">
       <div class="cards4">
-        <div><h4>Baseline: rank-only logistic</h4><p>One feature. What a fan already knows; every model must beat it.</p></div>
-        <div><h4>Logistic + Lasso</h4><p>Additive log-odds, interpretable; L1 drops weak features.</p></div>
-        <div><h4>SVM (RBF)</h4><p>Non-linear margin; Platt probabilities; last 12k training rows (O(n²)).</p></div>
-        <div><h4>Random forest · XGBoost</h4><p>Tree ensembles that learn interactions (e.g. form × clay).</p></div>
+        <div><h4>Baseline: rank-only logistic</h4><p>One feature. What a fan already knows, and in published comparisons ranking-based models are hard to beat <a class="cite" href="#ref-4">[4]</a>. Every model must beat it.</p></div>
+        <div><h4>Logistic + Lasso</h4><p>Additive log-odds, interpretable; L1 drops weak features <a class="cite" href="#ref-7">[7]</a>.</p></div>
+        <div><h4>SVM (RBF)</h4><p>Non-linear margin <a class="cite" href="#ref-8">[8]</a>; Platt probabilities <a class="cite" href="#ref-11">[11]</a>; last 12k training rows (O(n²)).</p></div>
+        <div><h4>Random forest · XGBoost</h4><p>Tree ensembles that learn interactions (e.g. form × clay): bagging <a class="cite" href="#ref-9">[9]</a> and gradient boosting <a class="cite" href="#ref-10">[10]</a>.</p></div>
       </div>
-      <p class="hint">Tuned by 4-fold <code>TimeSeriesSplit</code> on the training years:</p>
+      <p class="hint">Tuned by 4-fold <code>TimeSeriesSplit</code> on the training years (blocked, past-before-future cross-validation <a class="cite" href="#ref-15">[15]</a>), implemented with scikit-learn <a class="cite" href="#ref-19">[19]</a> and XGBoost <a class="cite" href="#ref-20">[20]</a>:</p>
       <div class="tablewrap"><table id="cv-table" class="small"></table></div></div></details>
 
     <details class="sec" open id="sec-eval"><summary><b>05</b> Evaluation design</summary><div class="sec-in">
       <div class="timeline" id="timeline"></div>
       <ul>
-        <li><strong>Select</strong> on validation log-loss; <strong>calibrate</strong> (Platt sigmoid) on validation; <strong>test once</strong>.</li>
-        <li><strong>Log-loss</strong> is primary: title odds multiply ~7 match probabilities, so probability quality matters more than picking winners.</li>
-        <li>Also accuracy, ROC-AUC, Brier, a reliability curve, and a paired bootstrap 95% CI vs the baseline.</li>
+        <li><strong>Select</strong> on validation log-loss; <strong>calibrate</strong> (Platt sigmoid <a class="cite" href="#ref-11">[11]</a>) on validation; <strong>test once</strong>. Sigmoid rather than isotonic calibration, because isotonic overfits when calibration data is small <a class="cite" href="#ref-12">[12]</a>.</li>
+        <li><strong>Log-loss</strong> is primary: it is a strictly proper scoring rule <a class="cite" href="#ref-14">[14]</a>, and title odds multiply ~7 match probabilities, so probability quality matters more than picking winners.</li>
+        <li>Also accuracy, ROC-AUC, Brier score <a class="cite" href="#ref-13">[13]</a>, a reliability curve, and a paired bootstrap <a class="cite" href="#ref-16">[16]</a> 95% CI vs the baseline.</li>
         <li>Tournament level: probability given to the real champion and a bracket log-score, model vs baseline.</li>
       </ul></div></details>
 
@@ -250,12 +251,24 @@
       <li><strong>Compounding.</strong> ~7 match probabilities multiply; matches are treated as independent (no fatigue).</li>
       <li><strong>Missing context:</strong> injuries, withdrawals, motivation, in-tournament form. Example: Jannik Sinner has no matches in the data after Wimbledon 2026, so his ranking in our snapshot is stale (flagged ⚠ on the site). The data has no separate rankings file to refresh it.</li>
       <li><strong>Small Slam sample</strong> (<span data-k="nSlams"></span> held-out); one surprise champion moves the scores.</li>
+      <li><strong>No rating system:</strong> at Grand Slams, Elo-style ratings (especially surface-specific ones) performed well against the official rankings <a class="cite" href="#ref-6">[6]</a>; adding an Elo feature is the most promising next step.</li>
       <li><strong>Small tuning grids,</strong> fixed before testing and not widened afterwards. Retirements excluded from scoring.</li>
     </ul></div></details>
 
-    <details class="sec" open id="sec-concl"><summary><b>09</b> Conclusion</summary><div class="sec-in"><p id="conclusion-text"></p></div></details>
+    <details class="sec" open id="sec-changes"><summary><b>09</b> Changes from the original plan</summary><div class="sec-in">
+      <p>The question, the unit of prediction, the features, the models compared, the time split, the metrics and the simulation design are as planned in our project proposal. The main differences, and why:</p>
+      <div class="tablewrap"><table class="small">
+        <tr><th>Planned</th><th>Final</th><th>Why</th></tr>
+        <tr><td>XGBoost as the main model</td><td><strong>Random forest</strong> selected; XGBoost still powers the head-to-head tool</td><td>We fixed the rule in advance: lowest validation log-loss wins. Random forest 0.6117 vs XGBoost 0.6120, a statistical tie; overriding the rule would be choosing by preference.</td></tr>
+        <tr><td>Logistic regression + Lasso as the baseline</td><td>A simpler <strong>rank-only</strong> baseline added; Lasso kept as a candidate</td><td>A baseline should be the simplest sensible rule. Rank-only asks directly whether we beat the official ranking.</td></tr>
+        <tr><td>ATP dataset (Sackmann's files)</td><td><strong>TennisMyLife</strong> (same format, kept up to date)</td><td>The Sackmann archive available to us ended on 25 May 2026; forecasting 2027 needed results through November 2026.</td></tr>
+        <tr><td>Route-to-final bracket built from the selected tournament's draw</td><td>For 2027, <strong>simulated seeded draws</strong> (top 32 kept apart, rest random each run); real draws for 20 past Slams</td><td>Every 2026 Slam had already been played and 2027 draws are only published days before each event, so 2027 routes average over many plausible draws.</td></tr>
+        <tr><td>1,000 simulations per tournament</td><td><strong>10,000</strong></td><td>Lower Monte Carlo noise (title-probability standard error at most 0.5 points) at negligible cost.</td></tr>
+      </table></div></div></details>
 
-    <details class="sec" open id="sec-repro"><summary><b>10</b> Reproduce</summary><div class="sec-in">
+    <details class="sec" open id="sec-concl"><summary><b>10</b> Conclusion</summary><div class="sec-in"><p id="conclusion-text"></p></div></details>
+
+    <details class="sec" open id="sec-repro"><summary><b>11</b> Reproduce</summary><div class="sec-in">
 <pre>pip install -r requirements.txt
 # download https://stats.tennismylife.org/api/download-all, copy 2008.csv … 2026.csv into data/raw/
 python -m src.features      # chronological features + pre-tournament snapshots
@@ -268,10 +281,45 @@ python -m http.server -d docs 8000</pre>
         Preprocessing: <code>src/features.py</code> · splits and constants: <code>src/config.py</code> · models, tuning and evaluation: <code>src/train.py</code> · simulation: <code>src/simulate.py</code>. The README has setup, run steps, data access, AI use and citations.</p>
       <p>Split: train <span data-k="trainY"></span> · validation <span data-k="valY"></span> · test <span data-k="testY"></span> · seed 42.</p></div></details>
 
-    <details class="sec" open id="sec-ai"><summary><b>11</b> AI use &amp; citations</summary><div class="sec-in">
-      <p><strong>AI disclosure:</strong> Claude (Anthropic) helped with code scaffolding, debugging, site layout and editing. We reviewed and re-ran everything and checked key outputs (leakage order, draw rebuild, browser-vs-Python agreement).</p>
-      <p><strong>Data:</strong> TennisMyLife database (stats.tennismylife.org), derived from J. Sackmann's <em>tennis_atp</em> (CC BY-NC-SA 4.0).
-        <strong>Methods:</strong> Chen &amp; Guestrin 2016 (XGBoost); Breiman 2001 (random forests); Tibshirani 1996 (Lasso); Platt 1999 (calibration); scikit-learn.</p></div></details>
+    <details class="sec" open id="sec-ai"><summary><b>12</b> AI use &amp; references</summary><div class="sec-in">
+      <p><strong>AI disclosure:</strong> Claude (Anthropic) was used for brainstorming, code scaffolding, debugging, website layout and editing text. We reviewed the code, re-ran the full pipeline ourselves, and checked the key outputs independently (leakage ordering, draw reconstruction, browser-vs-Python agreement, results against the data). We are responsible for every result.</p>
+      <h4>Data</h4>
+      <ol class="refs" start="1">
+        <li id="ref-1">TennisMyLife ATP match database. <a href="https://stats.tennismylife.org/tennis-match-database" target="_blank" rel="noopener">stats.tennismylife.org/tennis-match-database</a> <span class="why">· All match results (2008 – 9 Nov 2026).</span></li>
+        <li id="ref-2">J. Sackmann, <em>tennis_atp</em> dataset (CC BY-NC-SA 4.0). <span class="why">· Original data and file format that TennisMyLife builds on.</span></li>
+      </ol>
+      <h4>Tennis forecasting</h4>
+      <ol class="refs" start="3">
+        <li id="ref-3">F. Klaassen, J. Magnus. Forecasting the winner of a tennis match. <em>European Journal of Operational Research</em> 148(2), 2003. <a href="https://doi.org/10.1016/S0377-2217(02)00682-3" target="_blank" rel="noopener">doi.org/10.1016/S0377-2217(02)00682-3</a> <span class="why">· Point-based models, for context.</span></li>
+        <li id="ref-4">S. Kovalchik. Searching for the GOAT of tennis win prediction. <em>Journal of Quantitative Analysis in Sports</em> 12(3), 2016. <a href="https://doi.org/10.1515/jqas-2015-0059" target="_blank" rel="noopener">doi.org/10.1515/jqas-2015-0059</a> <span class="why">· Comparison of published models; motivates the ranking baseline.</span></li>
+        <li id="ref-5">M. Sipko, W. Knottenbelt. Machine Learning for the Prediction of Professional Tennis Matches. Imperial College London, 2015. <a href="https://www.doc.ic.ac.uk/teaching/distinguished-projects/2015/m.sipko.pdf" target="_blank" rel="noopener">www.doc.ic.ac.uk/teaching/distinguished-projects/2015/m.sipko.pdf</a> <span class="why">· Feature-based machine learning on ATP matches.</span></li>
+        <li id="ref-6">L. Vaughan Williams et al. How well do Elo-based ratings predict professional tennis matches? <em>Journal of Quantitative Analysis in Sports</em> 17(2), 2021. <a href="https://doi.org/10.1515/jqas-2019-0110" target="_blank" rel="noopener">doi.org/10.1515/jqas-2019-0110</a> <span class="why">· Rankings vs Elo at Grand Slams; future work.</span></li>
+      </ol>
+      <h4>Models</h4>
+      <ol class="refs" start="7">
+        <li id="ref-7">R. Tibshirani. Regression shrinkage and selection via the Lasso. <em>JRSS Series B</em> 58(1), 1996. <a href="https://doi.org/10.1111/j.2517-6161.1996.tb02080.x" target="_blank" rel="noopener">doi.org/10.1111/j.2517-6161.1996.tb02080.x</a> <span class="why">· Lasso logistic regression.</span></li>
+        <li id="ref-8">C. Cortes, V. Vapnik. Support-vector networks. <em>Machine Learning</em> 20, 1995. <a href="https://doi.org/10.1007/BF00994018" target="_blank" rel="noopener">doi.org/10.1007/BF00994018</a> <span class="why">· SVM.</span></li>
+        <li id="ref-9">L. Breiman. Random Forests. <em>Machine Learning</em> 45, 2001. <a href="https://doi.org/10.1023/A:1010933404324" target="_blank" rel="noopener">doi.org/10.1023/A:1010933404324</a> <span class="why">· Random forest (selected model).</span></li>
+        <li id="ref-10">T. Chen, C. Guestrin. XGBoost: A Scalable Tree Boosting System. <em>KDD</em>, 2016. <a href="https://doi.org/10.1145/2939672.2939785" target="_blank" rel="noopener">doi.org/10.1145/2939672.2939785</a> <span class="why">· XGBoost (website model).</span></li>
+      </ol>
+      <h4>Probabilities and evaluation</h4>
+      <ol class="refs" start="11">
+        <li id="ref-11">J. Platt. Probabilistic Outputs for Support Vector Machines and Comparisons to Regularized Likelihood Methods. In <em>Advances in Large Margin Classifiers</em>, 1999. <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.1639" target="_blank" rel="noopener">citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.1639</a> <span class="why">· Platt (sigmoid) calibration.</span></li>
+        <li id="ref-12">A. Niculescu-Mizil, R. Caruana. Predicting good probabilities with supervised learning. <em>ICML</em>, 2005. <a href="https://doi.org/10.1145/1102351.1102430" target="_blank" rel="noopener">doi.org/10.1145/1102351.1102430</a> <span class="why">· Calibration of tree ensembles; sigmoid vs isotonic.</span></li>
+        <li id="ref-13">G. Brier. Verification of forecasts expressed in terms of probability. <em>Monthly Weather Review</em> 78(1), 1950. <a href="https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2" target="_blank" rel="noopener">doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2</a> <span class="why">· Brier score.</span></li>
+        <li id="ref-14">T. Gneiting, A. Raftery. Strictly proper scoring rules, prediction, and estimation. <em>JASA</em> 102(477), 2007. <a href="https://doi.org/10.1198/016214506000001437" target="_blank" rel="noopener">doi.org/10.1198/016214506000001437</a> <span class="why">· Why log-loss is the primary metric.</span></li>
+        <li id="ref-15">C. Bergmeir, J. Benítez. On the use of cross-validation for time series predictor evaluation. <em>Information Sciences</em> 191, 2012. <a href="https://doi.org/10.1016/j.ins.2011.12.028" target="_blank" rel="noopener">doi.org/10.1016/j.ins.2011.12.028</a> <span class="why">· Time-ordered (blocked) cross-validation.</span></li>
+        <li id="ref-16">B. Efron. Bootstrap methods: another look at the jackknife. <em>Annals of Statistics</em> 7(1), 1979. <a href="https://doi.org/10.1214/aos/1176344552" target="_blank" rel="noopener">doi.org/10.1214/aos/1176344552</a> <span class="why">· Bootstrap confidence intervals.</span></li>
+        <li id="ref-17">S. Kaufman, S. Rosset, C. Perlich. Leakage in data mining: formulation, detection, and avoidance. <em>KDD</em>, 2011. <a href="https://doi.org/10.1145/2020408.2020496" target="_blank" rel="noopener">doi.org/10.1145/2020408.2020496</a> <span class="why">· Leakage control.</span></li>
+        <li id="ref-18">S. Kapoor, A. Narayanan. Leakage and the reproducibility crisis in machine-learning-based science. <em>Patterns</em> 4(9), 2023. <a href="https://doi.org/10.1016/j.patter.2023.100804" target="_blank" rel="noopener">doi.org/10.1016/j.patter.2023.100804</a> <span class="why">· Leakage control and reproducibility.</span></li>
+      </ol>
+      <h4>Software</h4>
+      <ol class="refs" start="19">
+        <li id="ref-19">F. Pedregosa et al. Scikit-learn: Machine Learning in Python. <em>JMLR</em> 12, 2011. <a href="https://jmlr.org/papers/v12/pedregosa11a.html" target="_blank" rel="noopener">jmlr.org/papers/v12/pedregosa11a.html</a> <span class="why">· Pipelines, models, tuning, metrics.</span></li>
+        <li id="ref-20">XGBoost library (dmlc/xgboost). <a href="https://github.com/dmlc/xgboost" target="_blank" rel="noopener">github.com/dmlc/xgboost</a> <span class="why">· Gradient-boosted trees.</span></li>
+        <li id="ref-21">pandas and NumPy. <a href="https://pandas.pydata.org/" target="_blank" rel="noopener">pandas.pydata.org/</a> <span class="why">· Data handling (with <a href="https://numpy.org/" target="_blank" rel="noopener">NumPy</a>).</span></li>
+      </ol>
+    </div></details>
   </section>
 </main>
 

@@ -221,6 +221,20 @@ Tennis-Slam-Predictor/
 
 ---
 
+## 🔁 Changes from the Proposal
+
+The question, features, candidate models, time split and metrics follow our proposal. The main differences:
+
+| Planned | Final | Why |
+|---|---|---|
+| XGBoost as the main model | Random forest selected; XGBoost powers the head-to-head tool | Pre-fixed rule: lowest validation log-loss wins (RF 0.6117 vs XGBoost 0.6120, a tie) |
+| Logistic + Lasso as baseline | Simpler rank-only baseline added; Lasso kept as a candidate | A baseline should be the simplest sensible rule |
+| ATP dataset (Sackmann's files) | TennisMyLife (same format) | The Sackmann archive available to us ended on 25 May 2026 |
+| Route-to-final from the tournament's draw | Simulated seeded draws for 2027; real draws for 20 past Slams | 2027 draws are not published yet |
+| 1,000 simulations | 10,000 simulations | Lower Monte Carlo noise at negligible cost |
+
+---
+
 ## 🚧 Limitations & Future Scope
 
 * **Forecast horizon:** player form is frozen at 9 November 2026, so later 2027 Slams are less reliable.
@@ -240,11 +254,38 @@ We used **Claude (Anthropic)** for brainstorming, code scaffolding, debugging, w
 
 ## 📚 References
 
-1. TennisMyLife ATP database: https://stats.tennismylife.org/tennis-match-database
-2. L. Breiman, "Random Forests," *Machine Learning*, 2001.
-3. T. Chen, C. Guestrin, "XGBoost: A Scalable Tree Boosting System," *KDD*, 2016.
-4. J. Platt, "Probabilistic Outputs for Support Vector Machines," 1999.
-5. F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *JMLR*, 2011.
+**Data**
+1. TennisMyLife ATP match database. [stats.tennismylife.org](https://stats.tennismylife.org/tennis-match-database)
+
+**Tennis forecasting**
+
+2. F. Klaassen, J. Magnus, "Forecasting the winner of a tennis match," *European Journal of Operational Research*, 2003. [doi](https://doi.org/10.1016/S0377-2217(02)00682-3)
+3. S. Kovalchik, "Searching for the GOAT of tennis win prediction," *Journal of Quantitative Analysis in Sports*, 2016. [doi](https://doi.org/10.1515/jqas-2015-0059)
+4. M. Sipko, W. Knottenbelt, "Machine Learning for the Prediction of Professional Tennis Matches," Imperial College London, 2015. [pdf](https://www.doc.ic.ac.uk/teaching/distinguished-projects/2015/m.sipko.pdf)
+5. L. Vaughan Williams et al., "How well do Elo-based ratings predict professional tennis matches?," *Journal of Quantitative Analysis in Sports*, 2021. [doi](https://doi.org/10.1515/jqas-2019-0110)
+
+**Models**
+
+6. R. Tibshirani, "Regression shrinkage and selection via the Lasso," *JRSS Series B*, 1996. [doi](https://doi.org/10.1111/j.2517-6161.1996.tb02080.x)
+7. C. Cortes, V. Vapnik, "Support-vector networks," *Machine Learning*, 1995. [doi](https://doi.org/10.1007/BF00994018)
+8. L. Breiman, "Random Forests," *Machine Learning*, 2001. [doi](https://doi.org/10.1023/A:1010933404324)
+9. T. Chen, C. Guestrin, "XGBoost: A Scalable Tree Boosting System," *KDD*, 2016. [doi](https://doi.org/10.1145/2939672.2939785)
+
+**Probabilities & evaluation**
+
+10. J. Platt, "Probabilistic Outputs for Support Vector Machines and Comparisons to Regularized Likelihood Methods," *Advances in Large Margin Classifiers*, 1999. [link](https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.1639)
+11. A. Niculescu-Mizil, R. Caruana, "Predicting good probabilities with supervised learning," *ICML*, 2005. [doi](https://doi.org/10.1145/1102351.1102430)
+12. G. Brier, "Verification of forecasts expressed in terms of probability," *Monthly Weather Review*, 1950. [doi](https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2)
+13. T. Gneiting, A. Raftery, "Strictly proper scoring rules, prediction, and estimation," *JASA*, 2007. [doi](https://doi.org/10.1198/016214506000001437)
+14. C. Bergmeir, J. Benítez, "On the use of cross-validation for time series predictor evaluation," *Information Sciences*, 2012. [doi](https://doi.org/10.1016/j.ins.2011.12.028)
+15. B. Efron, "Bootstrap methods: another look at the jackknife," *Annals of Statistics*, 1979. [doi](https://doi.org/10.1214/aos/1176344552)
+16. S. Kaufman, S. Rosset, C. Perlich, "Leakage in data mining: formulation, detection, and avoidance," *KDD*, 2011. [doi](https://doi.org/10.1145/2020408.2020496)
+17. S. Kapoor, A. Narayanan, "Leakage and the reproducibility crisis in machine-learning-based science," *Patterns*, 2023. [doi](https://doi.org/10.1016/j.patter.2023.100804)
+
+**Software**
+
+18. F. Pedregosa et al., "Scikit-learn: Machine Learning in Python," *JMLR*, 2011. [link](https://jmlr.org/papers/v12/pedregosa11a.html)
+19. XGBoost library. [github.com/dmlc/xgboost](https://github.com/dmlc/xgboost)
 
 ---
 

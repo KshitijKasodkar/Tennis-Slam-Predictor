@@ -202,3 +202,10 @@ select { width: 100%; cursor: pointer; }
 .cta a { color: var(--ball); font-weight: 700; text-decoration: none; }
 .cta a:hover { text-decoration: underline; }
 .foot a { color: inherit; }
+a.cite { font-size: .78em; vertical-align: super; text-decoration: none; margin-left: 1px; font-weight: 600; }
+ol.refs { padding-left: 26px; margin: 4px 0 10px; }
+ol.refs li { margin: 4px 0; font-size: 13.5px; line-height: 1.45; scroll-margin-top: 70px; }
+ol.refs li:target { background: color-mix(in srgb, var(--ball) 35%, transparent); border-radius: 4px; }
+ol.refs .why { color: var(--ink3); }
+ol.refs a { overflow-wrap: anywhere; }
+#sec-changes td { vertical-align: top; }
