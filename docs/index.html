@@ -177,7 +177,7 @@
 
     <details class="sec" open id="sec-prep"><summary><b>03</b> Preprocessing &amp; features</summary><div class="sec-in">
       <ul>
-        <li><strong>One chronological pass:</strong> read a match's features from the player history, <em>then</em> add its result. No match sees itself or the future, the most common source of leakage in prediction work <a class="cite" href="#ref-17">[17]</a><a class="cite" href="#ref-18">[18]</a>.</li>
+        <li><strong>One chronological pass:</strong> read a match's features from the player history, <em>then</em> add its result. No match sees itself or the future, the most common source of leakage in prediction work <a class="cite" href="#ref-15">[15]</a>.</li>
         <li><strong>Shrinkage:</strong> win rates = (wins + <span data-k="k2"></span>) / (matches + <span data-k="k"></span>) so a 2–0 record isn't “100%”.</li>
         <li><strong>Coin-flip A/B</strong> so the label is balanced and every feature flips sign with it; predictions average both orderings.</li>
         <li>Imputation/scaling sit inside sklearn pipelines → fitted on training folds only.</li>
@@ -200,15 +200,15 @@
         <div><h4>SVM (RBF)</h4><p>Non-linear margin <a class="cite" href="#ref-8">[8]</a>; Platt probabilities <a class="cite" href="#ref-11">[11]</a>; last 12k training rows (O(n²)).</p></div>
         <div><h4>Random forest · XGBoost</h4><p>Tree ensembles that learn interactions (e.g. form × clay): bagging <a class="cite" href="#ref-9">[9]</a> and gradient boosting <a class="cite" href="#ref-10">[10]</a>.</p></div>
       </div>
-      <p class="hint">Tuned by 4-fold <code>TimeSeriesSplit</code> on the training years (blocked, past-before-future cross-validation <a class="cite" href="#ref-15">[15]</a>), implemented with scikit-learn <a class="cite" href="#ref-19">[19]</a> and XGBoost <a class="cite" href="#ref-20">[20]</a>:</p>
+      <p class="hint">Tuned by 4-fold <code>TimeSeriesSplit</code> on the training years (each fold trains on the past and validates on the future):</p>
       <div class="tablewrap"><table id="cv-table" class="small"></table></div></div></details>
 
     <details class="sec" open id="sec-eval"><summary><b>05</b> Evaluation design</summary><div class="sec-in">
       <div class="timeline" id="timeline"></div>
       <ul>
         <li><strong>Select</strong> on validation log-loss; <strong>calibrate</strong> (Platt sigmoid <a class="cite" href="#ref-11">[11]</a>) on validation; <strong>test once</strong>. Sigmoid rather than isotonic calibration, because isotonic overfits when calibration data is small <a class="cite" href="#ref-12">[12]</a>.</li>
-        <li><strong>Log-loss</strong> is primary: it is a strictly proper scoring rule <a class="cite" href="#ref-14">[14]</a>, and title odds multiply ~7 match probabilities, so probability quality matters more than picking winners.</li>
-        <li>Also accuracy, ROC-AUC, Brier score <a class="cite" href="#ref-13">[13]</a>, a reliability curve, and a paired bootstrap <a class="cite" href="#ref-16">[16]</a> 95% CI vs the baseline.</li>
+        <li><strong>Log-loss</strong> is primary: it is a strictly proper scoring rule <a class="cite" href="#ref-13">[13]</a>, and title odds multiply ~7 match probabilities, so probability quality matters more than picking winners.</li>
+        <li>Also accuracy, ROC-AUC, Brier score, a reliability curve, and a paired bootstrap <a class="cite" href="#ref-14">[14]</a> 95% CI vs the baseline.</li>
         <li>Tournament level: probability given to the real champion and a bracket log-score, model vs baseline.</li>
       </ul></div></details>
 
@@ -306,18 +306,9 @@ python -m http.server -d docs 8000</pre>
       <ol class="refs" start="11">
         <li id="ref-11">J. Platt. Probabilistic Outputs for Support Vector Machines and Comparisons to Regularized Likelihood Methods. In <em>Advances in Large Margin Classifiers</em>, 1999. <a href="https://citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.1639" target="_blank" rel="noopener">citeseerx.ist.psu.edu/viewdoc/summary?doi=10.1.1.41.1639</a> <span class="why">· Platt (sigmoid) calibration.</span></li>
         <li id="ref-12">A. Niculescu-Mizil, R. Caruana. Predicting good probabilities with supervised learning. <em>ICML</em>, 2005. <a href="https://doi.org/10.1145/1102351.1102430" target="_blank" rel="noopener">doi.org/10.1145/1102351.1102430</a> <span class="why">· Calibration of tree ensembles; sigmoid vs isotonic.</span></li>
-        <li id="ref-13">G. Brier. Verification of forecasts expressed in terms of probability. <em>Monthly Weather Review</em> 78(1), 1950. <a href="https://doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2" target="_blank" rel="noopener">doi.org/10.1175/1520-0493(1950)078%3C0001:VOFEIT%3E2.0.CO;2</a> <span class="why">· Brier score.</span></li>
-        <li id="ref-14">T. Gneiting, A. Raftery. Strictly proper scoring rules, prediction, and estimation. <em>JASA</em> 102(477), 2007. <a href="https://doi.org/10.1198/016214506000001437" target="_blank" rel="noopener">doi.org/10.1198/016214506000001437</a> <span class="why">· Why log-loss is the primary metric.</span></li>
-        <li id="ref-15">C. Bergmeir, J. Benítez. On the use of cross-validation for time series predictor evaluation. <em>Information Sciences</em> 191, 2012. <a href="https://doi.org/10.1016/j.ins.2011.12.028" target="_blank" rel="noopener">doi.org/10.1016/j.ins.2011.12.028</a> <span class="why">· Time-ordered (blocked) cross-validation.</span></li>
-        <li id="ref-16">B. Efron. Bootstrap methods: another look at the jackknife. <em>Annals of Statistics</em> 7(1), 1979. <a href="https://doi.org/10.1214/aos/1176344552" target="_blank" rel="noopener">doi.org/10.1214/aos/1176344552</a> <span class="why">· Bootstrap confidence intervals.</span></li>
-        <li id="ref-17">S. Kaufman, S. Rosset, C. Perlich. Leakage in data mining: formulation, detection, and avoidance. <em>KDD</em>, 2011. <a href="https://doi.org/10.1145/2020408.2020496" target="_blank" rel="noopener">doi.org/10.1145/2020408.2020496</a> <span class="why">· Leakage control.</span></li>
-        <li id="ref-18">S. Kapoor, A. Narayanan. Leakage and the reproducibility crisis in machine-learning-based science. <em>Patterns</em> 4(9), 2023. <a href="https://doi.org/10.1016/j.patter.2023.100804" target="_blank" rel="noopener">doi.org/10.1016/j.patter.2023.100804</a> <span class="why">· Leakage control and reproducibility.</span></li>
-      </ol>
-      <h4>Software</h4>
-      <ol class="refs" start="19">
-        <li id="ref-19">F. Pedregosa et al. Scikit-learn: Machine Learning in Python. <em>JMLR</em> 12, 2011. <a href="https://jmlr.org/papers/v12/pedregosa11a.html" target="_blank" rel="noopener">jmlr.org/papers/v12/pedregosa11a.html</a> <span class="why">· Pipelines, models, tuning, metrics.</span></li>
-        <li id="ref-20">XGBoost library (dmlc/xgboost). <a href="https://github.com/dmlc/xgboost" target="_blank" rel="noopener">github.com/dmlc/xgboost</a> <span class="why">· Gradient-boosted trees.</span></li>
-        <li id="ref-21">pandas and NumPy. <a href="https://pandas.pydata.org/" target="_blank" rel="noopener">pandas.pydata.org/</a> <span class="why">· Data handling (with <a href="https://numpy.org/" target="_blank" rel="noopener">NumPy</a>).</span></li>
+        <li id="ref-13">T. Gneiting, A. Raftery. Strictly proper scoring rules, prediction, and estimation. <em>JASA</em> 102(477), 2007. <a href="https://doi.org/10.1198/016214506000001437" target="_blank" rel="noopener">doi.org/10.1198/016214506000001437</a> <span class="why">· Why log-loss is the primary metric.</span></li>
+        <li id="ref-14">B. Efron. Bootstrap methods: another look at the jackknife. <em>Annals of Statistics</em> 7(1), 1979. <a href="https://doi.org/10.1214/aos/1176344552" target="_blank" rel="noopener">doi.org/10.1214/aos/1176344552</a> <span class="why">· Bootstrap confidence intervals.</span></li>
+        <li id="ref-15">S. Kaufman, S. Rosset, C. Perlich. Leakage in data mining: formulation, detection, and avoidance. <em>KDD</em>, 2011. <a href="https://doi.org/10.1145/2020408.2020496" target="_blank" rel="noopener">doi.org/10.1145/2020408.2020496</a> <span class="why">· Leakage control.</span></li>
       </ol>
     </div></details>
   </section>
