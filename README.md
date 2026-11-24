@@ -32,6 +32,7 @@ No installation required. The site is fully static (GitHub Pages) and the traine
 ## 🎓 Course & Project Information
 
 - **Course:** ES 335: Machine Learning
+- **Instructor:** Prof. Udit Bhatia
 - **Institute:** Indian Institute of Technology Gandhinagar
 - **Deliverable:** interactive project website on GitHub Pages + source repository
 
